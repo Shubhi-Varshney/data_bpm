@@ -27,3 +27,4 @@ def load_data_to_bq(
     - Save the DataFrame to BigQuery
     - Empty the table beforehand if `truncate` is True, append otherwise
     """
+    pass

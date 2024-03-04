@@ -2,6 +2,7 @@ pytest
 pylint
 ipdb
 jupyterlab
+notebook
 numpy
 pandas
 matplotlib

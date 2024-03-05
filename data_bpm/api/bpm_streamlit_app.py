@@ -58,22 +58,22 @@ def make_heatmap(input_df, input_y, input_x, input_color, input_color_theme):
     # height=300
     return heatmap
 
-# Choropleth map
-def make_choropleth(input_df, input_id, input_column, input_color_theme):
-    choropleth = px.choropleth(input_df, locations=input_id, color=input_column, locationmode="USA-states",
-                               color_continuous_scale=input_color_theme,
-                               range_color=(0, max(df_selected_year.population)),
-                               scope="usa",
-                               labels={'population':'Population'}
-                              )
-    choropleth.update_layout(
-        template='plotly_dark',
-        plot_bgcolor='rgba(0, 0, 0, 0)',
-        paper_bgcolor='rgba(0, 0, 0, 0)',
-        margin=dict(l=0, r=0, t=0, b=0),
-        height=350
-    )
-    return choropleth
+# # Choropleth map
+# def make_choropleth(input_df, input_id, input_column, input_color_theme):
+#     choropleth = px.choropleth(input_df, locations=input_id, color=input_column, locationmode="USA-states",
+#                                color_continuous_scale=input_color_theme,
+#                                range_color=(0, max(df_selected_year.population)),
+#                                scope="usa",
+#                                labels={'population':'Population'}
+#                               )
+#     choropleth.update_layout(
+#         template='plotly_dark',
+#         plot_bgcolor='rgba(0, 0, 0, 0)',
+#         paper_bgcolor='rgba(0, 0, 0, 0)',
+#         margin=dict(l=0, r=0, t=0, b=0),
+#         height=350
+#     )
+#     return choropleth
 
 
 # Donut chart
@@ -134,6 +134,21 @@ def calculate_population_difference(input_df, input_year):
   selected_year_data['population_difference'] = selected_year_data.population.sub(previous_year_data.population, fill_value=0)
   return pd.concat([selected_year_data.states, selected_year_data.id, selected_year_data.population, selected_year_data.population_difference], axis=1).sort_values(by="population_difference", ascending=False)
 
+# Calculate number of people attending from each company
+def calculate_company_number(input_df):
+    
+    company_list = []
+    
+    for i in input_df["company"]: 
+        if input_df[f"{i}"] not in company_list:
+            company_list.append(input_df[f"{i}"])
+        
+    company_calc_df = pd.DataFrame()
+    for j in company_list:
+        company_calc_df[f"{j}"] = input_df["company"].value_counts()[f'{j}']
+        
+    return  company_calc_df
+        
 
 #######################
 # Dashboard Main Panel
@@ -202,18 +217,18 @@ with col[1]:
     
 
 with col[2]:
-    st.markdown('#### Top States')
+    st.markdown('#### Top Companies')
 
     st.dataframe(df_selected_year_sorted,
-                 column_order=("states", "population"),
+                 column_order=("Companies", "Attendees"),
                  hide_index=True,
                  width=None,
                  column_config={
-                    "states": st.column_config.TextColumn(
-                        "States",
+                    "Companies": st.column_config.TextColumn(
+                        "company",
                     ),
                     "population": st.column_config.ProgressColumn(
-                        "Population",
+                        "attendees",
                         format="%f",
                         min_value=0,
                         max_value=max(df_selected_year_sorted.population),

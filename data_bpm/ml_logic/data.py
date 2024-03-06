@@ -82,8 +82,14 @@ def clean_data(data_events_ppl,data_scraped):
 
     # Drop columns from the merged
     data_merged.drop(columns=columns_to_drop, inplace=True)
+    data_merged.set_index('UserID', inplace=True)
 
-    return data_merged
+    # create the data frame for the analytics
+
+    data_analytics = data_analytics = data_events_ppl.merge(unique_attendees[["UserID","fullName"]], how = 'right',on = "fullName")
+    data_analytics.drop(labels = ['First Name','Surname','Email','fullName'], axis=1, inplace=True)
+
+    return (data_merged,data_analytics)
 
 def get_data():
 
@@ -132,9 +138,10 @@ def get_data():
     elif params.MODEL_TARGET == 'local':
         print(Fore.BLUE + "\nLoad data from local CSV..." + Style.RESET_ALL)
 
-        data_events_ppl = pd.read_csv(Path.join("..", "raw_data", "raw_all.csv"))
-        data_scraped = pd.read_csv(Path.join("..","raw_data", "../raw_data/raw_scrapped.csv"))
-        data_events_series = pd.read_csv(Path.join("..","raw_data", "raw_events.csv"))
+        # Get Local Data'
+        data_events_ppl = pd.read_csv(Path.join("raw_data", "240304 BPM Events list people  - ALL __.csv"))
+        data_scraped = pd.read_csv(Path.join("raw_data", "result.csv"))
+        # data_events_series = pd.read_csv(Path.join("..","raw_data", "BPM Events list people.csv"))
 
     # Clean Data
 #     clean_data()
@@ -142,11 +149,6 @@ def get_data():
 #                  'data_dcrapped' : data_scraped,
 #                  'data_events' : data_events_series
 #     })
-=======
-    # Get Local Data
-#     data_events_ppl = pd.read_csv(Path.join("..", "raw_data", "240304 BPM Events list people  - ALL __.csv"))
-#     data_scraped = pd.read_csv(Path.join("..","raw_data", "result.csv"))
-#     data_events_series = pd.read_csv(Path.join("..","raw_data", "BPM Events list people.csv"))
 
     return clean_data(data_events_ppl, data_scraped)
 

@@ -10,7 +10,7 @@ scikit-learn
 ipdb
 google-cloud-bigquery
 google-cloud-storage
-mlflow
+
 
 ### STREAMLIT ###
 

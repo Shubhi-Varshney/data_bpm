@@ -2,7 +2,7 @@ import pandas as pd
 import os.path as Path
 from colorama import Fore, Style
 from google.cloud import bigquery
-import params
+from data_bpm import params
 import numpy as np
 import string as str
 import unicodedata
@@ -13,6 +13,7 @@ def clean_data(data_events_ppl,data_scraped):
     MVP: merging only the first two files
     '''
     # Clean data_events_ppl
+    breakpoint()
     data_events_ppl["First Name"] = data_events_ppl["First Name"].apply(process_name)
     data_events_ppl["Surname"] = data_events_ppl["Surname"].apply(process_name)
     data_events_ppl["fullName"] = data_events_ppl["First Name"] + ' ' + data_events_ppl["Surname"]
@@ -82,10 +83,40 @@ def clean_data(data_events_ppl,data_scraped):
 
     # Drop columns from the merged
     data_merged.drop(columns=columns_to_drop, inplace=True)
+    data_merged.set_index('UserID', inplace=True)
 
-    return data_merged
+    # create the data frame for the analytics-----------------------------------------
+
+    data_analytics = data_events_ppl.merge(unique_attendees[["UserID","fullName"]], how = 'right',on = "fullName")
+    data_analytics.drop(labels = ['First Name','Surname','Email','fullName'], axis=1, inplace=True)
+
+    # Merge the two DataFrames on 'UserID'
+    merged_df = data_analytics.merge(data_merged[['company','jobTitle','jobTitle2']], how='left', left_on='UserID', right_index=True)
+
+    # Replace suspicious and empty strings in the Company name with NaNs
+    to_replace_list = ['','none','xxx','-','tbd','123','n','na','x','--']
+    merged_df['Company'].replace(to_replace_list, pd.NA, inplace=True)
+
+    # Update 'Company' with values from 'company' where 'Company' is NaN
+    merged_df['Company'].fillna(merged_df['company'], inplace=True)
+    data_analytics['Company'] = merged_df['Company']
+
+    # Update 'Choose your role' with values from 'jobTitle' where 'Choose your role' is NaN
+    merged_df['Choose your role'].fillna(merged_df['jobTitle'], inplace=True)
+    data_analytics['Choose your role'] = merged_df['Choose your role']
+
+    # Update 'Choose your role.1' with values from 'jobTitle2' where 'Choose your role.1' is NaN
+    merged_df['Choose your role.1'].fillna(merged_df['jobTitle2'], inplace=True)
+    data_analytics['Choose your role.1'] = merged_df['Choose your role.1']
+
+
+    return (data_merged,data_analytics)
 
 def get_data():
+
+    data_events_ppl = pd.DataFrame()
+    data_scraped = pd.DataFrame()
+    data_events_series = pd.DataFrame()
 
     # Get Data from Goggle Cloud BigQuery
     if params.MODEL_TARGET == 'gcs':
@@ -132,9 +163,10 @@ def get_data():
     elif params.MODEL_TARGET == 'local':
         print(Fore.BLUE + "\nLoad data from local CSV..." + Style.RESET_ALL)
 
-        data_events_ppl = pd.read_csv(Path.join("..", "raw_data", "raw_all.csv"))
-        data_scraped = pd.read_csv(Path.join("..","raw_data", "../raw_data/raw_scrapped.csv"))
-        data_events_series = pd.read_csv(Path.join("..","raw_data", "raw_events.csv"))
+        # Get Local Data'
+        data_events_ppl = pd.read_csv(Path.join("raw_data", "240304 BPM Events list people  - ALL __.csv"))
+        data_scraped = pd.read_csv(Path.join("raw_data", "result.csv"))
+        # data_events_series = pd.read_csv(Path.join("..","raw_data", "BPM Events list people.csv"))
 
     # Clean Data
 #     clean_data()
@@ -142,11 +174,6 @@ def get_data():
 #                  'data_dcrapped' : data_scraped,
 #                  'data_events' : data_events_series
 #     })
-=======
-    # Get Local Data
-#     data_events_ppl = pd.read_csv(Path.join("..", "raw_data", "240304 BPM Events list people  - ALL __.csv"))
-#     data_scraped = pd.read_csv(Path.join("..","raw_data", "result.csv"))
-#     data_events_series = pd.read_csv(Path.join("..","raw_data", "BPM Events list people.csv"))
 
     return clean_data(data_events_ppl, data_scraped)
 

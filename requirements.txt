@@ -5,28 +5,25 @@ jupyterlab
 notebook
 numpy
 pandas
-matplotlib
-seaborn
+
 scikit-learn
 ipdb
 google-cloud-bigquery
 google-cloud-storage
 
+
 ### STREAMLIT ###
 
 streamlit
-pandas
+
 altair
+
+plotly
 plotly.express
 
 #### API ###
 
 uvicorn
 fastapi
-
-=======
-glob
-os
-time
 colorama
 pytz

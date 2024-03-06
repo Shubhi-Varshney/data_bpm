@@ -6,9 +6,11 @@ from data_bpm.ml_logic.data import get_data, clean_data
 def preprocess():
     #breakpoint()
     ## Load the data
+
     data_for_ml = get_data()
     print(data_for_ml)
     print(data_for_ml.info())
+
     # clean_data()
 
 def train():

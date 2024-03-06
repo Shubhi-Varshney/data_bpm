@@ -7,7 +7,7 @@ def preprocess():
 
     ## Load the data
     get_data()
-    clean_data()
+    #clean_data()
 
 def train():
     pass
@@ -20,6 +20,6 @@ def pred():
 
 if __name__ == '__main__':
     preprocess()
-    train()
-    evaluate()
-    pred()
+    # train()
+    # evaluate()
+    # pred()

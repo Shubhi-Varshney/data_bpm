@@ -82,8 +82,14 @@ def clean_data(data_events_ppl,data_scraped):
 
     # Drop columns from the merged
     data_merged.drop(columns=columns_to_drop, inplace=True)
+    data_merged.set_index('UserID', inplace=True)
 
-    return data_merged
+    # create the data frame for the analytics
+
+    data_analytics = data_analytics = data_events_ppl.merge(unique_attendees[["UserID","fullName"]], how = 'right',on = "fullName")
+    data_analytics.drop(labels = ['First Name','Surname','Email','fullName'], axis=1, inplace=True)
+
+    return (data_merged,data_analytics)
 
 def get_data():
 

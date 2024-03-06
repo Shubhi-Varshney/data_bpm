@@ -13,7 +13,14 @@ def clean_data(data_events_ppl,data_scraped):
     MVP: merging only the first two files
     '''
     # Clean data_events_ppl
-    breakpoint()
+    # breakpoint()
+    if len(data_events_ppl) == 0:
+        print(Fore.RED + "\nEvents and ppl data is empty!" + Style.RESET_ALL)
+        return (None,None)
+    if len(data_scraped) == 0:
+        print(Fore.RED + "\nScraped data is empty!" + Style.RESET_ALL)
+        return (None,None)
+
     data_events_ppl["First Name"] = data_events_ppl["First Name"].apply(process_name)
     data_events_ppl["Surname"] = data_events_ppl["Surname"].apply(process_name)
     data_events_ppl["fullName"] = data_events_ppl["First Name"] + ' ' + data_events_ppl["Surname"]
@@ -167,6 +174,9 @@ def get_data():
         data_events_ppl = pd.read_csv(Path.join("raw_data", "240304 BPM Events list people  - ALL __.csv"))
         data_scraped = pd.read_csv(Path.join("raw_data", "result.csv"))
         # data_events_series = pd.read_csv(Path.join("..","raw_data", "BPM Events list people.csv"))
+    else:
+        print(Fore.RED + "\nMODEL_TARGET not set, exiting" + Style.RESET_ALL)
+        return(None,None)
 
     # Clean Data
 #     clean_data()

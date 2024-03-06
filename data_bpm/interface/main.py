@@ -4,12 +4,12 @@ import os.path as Path
 from data_bpm.ml_logic.data import get_data, clean_data
 
 def preprocess():
-    breakpoint()
+    #breakpoint()
     ## Load the data
 
     data_for_ml = get_data()
     print(data_for_ml.sample())
-    
+
     # clean_data()
 
 def train():

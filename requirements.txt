@@ -9,7 +9,6 @@ matplotlib
 seaborn
 scikit-learn
 ipdb
-tensorflow
 google-cloud-bigquery
 google-cloud-storage
 pickle

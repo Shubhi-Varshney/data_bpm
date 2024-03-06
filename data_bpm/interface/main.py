@@ -9,7 +9,8 @@ def preprocess():
     data_for_ml, data_for_analytics = get_data()
     print(data_for_ml)
     print(data_for_ml.info())
-
+    print(data_for_analytics)
+    print(data_for_analytics.info())
     # clean_data()
 
 def train():

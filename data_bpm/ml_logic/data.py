@@ -2,7 +2,7 @@ import pandas as pd
 import os.path as Path
 from colorama import Fore, Style
 from google.cloud import bigquery
-import params
+from data_bpm import params
 import numpy as np
 import string as str
 import unicodedata
@@ -13,6 +13,7 @@ def clean_data(data_events_ppl,data_scraped):
     MVP: merging only the first two files
     '''
     # Clean data_events_ppl
+    breakpoint()
     data_events_ppl["First Name"] = data_events_ppl["First Name"].apply(process_name)
     data_events_ppl["Surname"] = data_events_ppl["Surname"].apply(process_name)
     data_events_ppl["fullName"] = data_events_ppl["First Name"] + ' ' + data_events_ppl["Surname"]
@@ -84,14 +85,38 @@ def clean_data(data_events_ppl,data_scraped):
     data_merged.drop(columns=columns_to_drop, inplace=True)
     data_merged.set_index('UserID', inplace=True)
 
-    # create the data frame for the analytics
+    # create the data frame for the analytics-----------------------------------------
 
-    data_analytics = data_analytics = data_events_ppl.merge(unique_attendees[["UserID","fullName"]], how = 'right',on = "fullName")
+    data_analytics = data_events_ppl.merge(unique_attendees[["UserID","fullName"]], how = 'right',on = "fullName")
     data_analytics.drop(labels = ['First Name','Surname','Email','fullName'], axis=1, inplace=True)
+
+    # Merge the two DataFrames on 'UserID'
+    merged_df = data_analytics.merge(data_merged[['company','jobTitle','jobTitle2']], how='left', left_on='UserID', right_index=True)
+
+    # Replace suspicious and empty strings in the Company name with NaNs
+    to_replace_list = ['','none','xxx','-','tbd','123','n','na','x','--']
+    merged_df['Company'].replace(to_replace_list, pd.NA, inplace=True)
+
+    # Update 'Company' with values from 'company' where 'Company' is NaN
+    merged_df['Company'].fillna(merged_df['company'], inplace=True)
+    data_analytics['Company'] = merged_df['Company']
+
+    # Update 'Choose your role' with values from 'jobTitle' where 'Choose your role' is NaN
+    merged_df['Choose your role'].fillna(merged_df['jobTitle'], inplace=True)
+    data_analytics['Choose your role'] = merged_df['Choose your role']
+
+    # Update 'Choose your role.1' with values from 'jobTitle2' where 'Choose your role.1' is NaN
+    merged_df['Choose your role.1'].fillna(merged_df['jobTitle2'], inplace=True)
+    data_analytics['Choose your role.1'] = merged_df['Choose your role.1']
+
 
     return (data_merged,data_analytics)
 
 def get_data():
+
+    data_events_ppl = pd.DataFrame()
+    data_scraped = pd.DataFrame()
+    data_events_series = pd.DataFrame()
 
     # Get Data from Goggle Cloud BigQuery
     if params.MODEL_TARGET == 'gcs':

@@ -9,7 +9,8 @@ matplotlib
 seaborn
 scikit-learn
 
-
 #### API ###
 uvicorn
 fastapi
+
+colorma

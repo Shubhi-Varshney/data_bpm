@@ -19,7 +19,7 @@ alt.themes.enable("dark")
 #######################
 # Load data
     ### TO-DO   --> add correct data
-df_reshaped = pd.read_csv('data/us-population-2010-2019-reshaped.csv')
+df_reshaped = pd.read_csv('/home/dhodal/code/Shubhi-Varshney/data-bpm/raw_data/cleaned_data_for_ml.csv')
 
 
 #######################
@@ -27,11 +27,11 @@ df_reshaped = pd.read_csv('data/us-population-2010-2019-reshaped.csv')
 with st.sidebar:
     st.title('BPM Stakeholders Dashboard')
     
-    event_list = list(df_reshaped.event.unique())[::-1]
+    event_list = [1, 2, 3, 4, 5, 6]
     
     selected_event = st.selectbox('Select an event', event_list)
-    df_selected_event = df_reshaped[df_reshaped.event == selected_event]
-    df_selected_event_sorted = df_selected_event.sort_values(by="population", ascending=False) # <-- to be changed
+#    df_selected_event = df_reshaped[df_reshaped.event == selected_event]
+#    df_selected_event_sorted = df_selected_event.sort_values(by="population", ascending=False) # <-- to be changed
 
     color_theme_list = ['blues', 'cividis', 'greens', 'inferno', 'magma', 'plasma', 'reds', 'rainbow', 'turbo', 'viridis']
     selected_color_theme = st.selectbox('Select a color theme', color_theme_list)
@@ -137,17 +137,9 @@ def calculate_population_difference(input_df, input_year):
 # Calculate number of people attending from each company
 def calculate_company_number(input_df):
     
-    company_list = []
+    df_attendees = pd.DataFrame(input_df["company"].value_counts())
     
-    for i in input_df["company"]: 
-        if input_df[f"{i}"] not in company_list:
-            company_list.append(input_df[f"{i}"])
-        
-    company_calc_df = pd.DataFrame()
-    for j in company_list:
-        company_calc_df[f"{j}"] = input_df["company"].value_counts()[f'{j}']
-        
-    return  company_calc_df
+    return  df_attendees
         
 
 #######################
@@ -217,21 +209,22 @@ with col[1]:
     
 
 with col[2]:
+    df_attendees = pd.DataFrame(input_df["company"].value_counts())
     st.markdown('#### Top Companies')
 
-    st.dataframe(df_selected_year_sorted,
+    st.dataframe(df_attendees,
                  column_order=("Companies", "Attendees"),
                  hide_index=True,
                  width=None,
                  column_config={
                     "Companies": st.column_config.TextColumn(
-                        "company",
+                        "index",
                     ),
                     "population": st.column_config.ProgressColumn(
-                        "attendees",
+                        "count",
                         format="%f",
                         min_value=0,
-                        max_value=max(df_selected_year_sorted.population),
+                        max_value=max(df_attendees.count),
                      )}
                  )
     

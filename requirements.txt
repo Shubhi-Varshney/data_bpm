@@ -5,8 +5,7 @@ jupyterlab
 notebook
 numpy
 pandas
-matplotlib
-seaborn
+
 scikit-learn
 ipdb
 google-cloud-bigquery
@@ -16,8 +15,10 @@ mlflow
 ### STREAMLIT ###
 
 streamlit
-pandas
+
 altair
+
+plotly
 plotly.express
 
 #### API ###

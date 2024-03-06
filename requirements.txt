@@ -9,8 +9,25 @@ matplotlib
 seaborn
 scikit-learn
 ipdb
+tensorflow
+google-cloud-bigquery
+google-cloud-storage
+pickle
+mlflow
 
+### STREAMLIT ###
+
+streamlit
+pandas
+altair
+plotly.express
 
 #### API ###
+
 uvicorn
 fastapi
+glob
+os
+time
+colorama
+pytz

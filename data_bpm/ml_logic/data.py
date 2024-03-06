@@ -83,9 +83,10 @@ def clean_data(data_events_ppl,data_scraped):
     return data_merged
 
 def get_data():
-    # Get Local Data
-    data_events_ppl = pd.read_csv(Path.join("..", "raw_data", "240304 BPM Events list people  - ALL __.csv"))
-    data_scraped = pd.read_csv(Path.join("..","raw_data", "result.csv"))
+    # Get Local Data'
+    # breakpoint()
+    data_events_ppl = pd.read_csv(Path.join("raw_data", "240304 BPM Events list people  - ALL __.csv"))
+    data_scraped = pd.read_csv(Path.join("raw_data", "result.csv"))
     # data_events_series = pd.read_csv(Path.join("..","raw_data", "BPM Events list people.csv"))
 
     return clean_data(data_events_ppl,data_scraped)

@@ -62,7 +62,7 @@ def transform_SchoolPassed(X):
             years = np.nan
         return years
 
-    years = X.apply(lambda x : calc_years(x))
+    years = X.apply(lambda x : calc_years(x), axis = 1)
     return years
 
 def transform_location(X: pd.DataFrame):

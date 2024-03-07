@@ -94,6 +94,10 @@ def clean_data(data_events_ppl, data_scraped):
     data_merged.drop(columns=columns_to_drop, inplace=True)
     data_merged.set_index('UserID', inplace=True)
 
+    # Dropping a particular row as for a invalid format for jobDuration "Less than 1 year"
+    # To do a more sophisticate function to handle these type of data in cleaning
+    data_merged.drop(509, inplace=True)
+
     # create the data frame for the analytics-----------------------------------------
 
     data_analytics = data_events_ppl.merge(unique_attendees[["UserID","fullName"]], how = 'right',on = "fullName")
@@ -117,6 +121,8 @@ def clean_data(data_events_ppl, data_scraped):
     # Update 'Choose your role.1' with values from 'jobTitle2' where 'Choose your role.1' is NaN
     merged_df['Choose your role.1'].fillna(merged_df['jobTitle2'], inplace=True)
     data_analytics['Choose your role.1'] = merged_df['Choose your role.1']
+
+    data_analytics.set_index('UserID', inplace=True)
 
     return (data_merged, data_analytics)
 

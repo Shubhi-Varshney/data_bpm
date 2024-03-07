@@ -1,6 +1,14 @@
 import pandas as pd
 import datetime
 import numpy as np
+import re # REGEX
+import string
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.decomposition import TruncatedSVD
+from data_bpm import params
 
 def transform_jobDateRange(X: pd.DataFrame):
     '''
@@ -87,3 +95,61 @@ def transform_location(X: pd.DataFrame):
 
     X['location'] = X['location'].str.split(',').str[0]
     return X[X['location'] == 'Berlin']
+
+def transform_metadata(df):
+    df.fillna("", inplace=True)
+
+    df['metadata'] = df.apply(lambda row: ' '.join(row), axis=1)
+
+    df['metadata'] = df.metadata.apply(basic_cleaning)
+    df['metadata'] = df.metadata.apply(remove_stopwords)
+    df['metadata'] = df.metadata.apply(lemma)
+
+    count = CountVectorizer(stop_words='english')
+    count_matrix = count.fit_transform(df['metadata'])
+    count_df = pd.DataFrame(count_matrix.toarray(), index=df.index.tolist())
+
+    # Apply SVD
+    svd = TruncatedSVD(n_components=params.SVD_COMPONENTS)
+    latent_df = svd.fit_transform(count_df)
+
+
+    return pd.DataFrame(latent_df)
+
+
+def basic_cleaning(sentence):
+
+    # 1. Removing whitespaces
+    sentence = sentence.strip()
+
+    # 2. Lowercasing
+    sentence = sentence.lower()
+
+    # 3. Removing numbers
+    sentence = ''.join(char for char in sentence if not char.isdigit())
+
+    # remove tags
+    sentence = re.sub('<[^<]+>', "", sentence)
+
+    # 4. Removing punctuation
+    for punctuation in string.punctuation:
+        sentence = sentence.replace(punctuation, '')
+
+    #5 remove non-alpha characters
+    sentence = sentence.replace(r'[^a-zA-Z\s]', '')
+
+    return sentence
+
+stop_words = set(stopwords.words('english'))
+
+def remove_stopwords (text):
+    tokenized = word_tokenize(text)
+    without_stopwords = [word for word in tokenized if not word in stop_words]
+    return without_stopwords
+
+
+def lemma(text):
+    lemmatizer = WordNetLemmatizer() # Instantiate lemmatizer
+    lemmatized = [lemmatizer.lemmatize(word) for word in text] # Lemmatize
+    lemmatized_string = " ".join(lemmatized)
+    return lemmatized_string

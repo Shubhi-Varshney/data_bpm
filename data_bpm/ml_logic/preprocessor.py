@@ -26,7 +26,6 @@ def preprocess_features(X: pd.DataFrame):
                         SimpleImputer(strategy='mean')
     )
 
-
     final_preprocessor = ColumnTransformer(
             [
                 ("employment_pipe", employment_pipe, ["jobDateRange"]),
@@ -37,7 +36,7 @@ def preprocess_features(X: pd.DataFrame):
         )
 
     X_processed = final_preprocessor.fit_transform(X)
-    print(X_processed.head())
+    print(X_processed[:5, :5])
 
     print("✅ X_processed, with shape", X_processed.shape)
 

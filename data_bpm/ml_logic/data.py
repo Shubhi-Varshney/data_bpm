@@ -9,7 +9,9 @@ import unicodedata
 
 def clean_data(data_events_ppl, data_scraped):
     '''
-    Clean the data, merge the three files and returns a single datframe
+    Clean the data, merge the three files and returns two datframes
+    1. Data for model
+    2. Data for dashboard
     MVP: merging only the first two files
     '''
     # Clean data_events_ppl
@@ -117,7 +119,7 @@ def clean_data(data_events_ppl, data_scraped):
     data_analytics['Choose your role.1'] = merged_df['Choose your role.1']
 
 
-    return (data_merged,data_analytics)
+    return (data_merged, data_analytics)
 
 def get_data():
 
@@ -171,21 +173,14 @@ def get_data():
         print(Fore.BLUE + "\nLoad data from local CSV..." + Style.RESET_ALL)
 
         # Get Local Data'
-        data_events_ppl = pd.read_csv(Path.join("raw_data", "240304 BPM Events list people  - ALL __.csv"))
-        data_scraped = pd.read_csv(Path.join("raw_data", "result.csv"))
-        # data_events_series = pd.read_csv(Path.join("..","raw_data", "BPM Events list people.csv"))
+        # data_events_ppl = pd.read_csv(Path.join("raw_data", "240304 BPM Events list people  - ALL __.csv"))
+        # data_scraped = pd.read_csv(Path.join("raw_data", "result.csv"))
+        # # data_events_series = pd.read_csv(Path.join("..","raw_data", "BPM Events list people.csv"))
+        data_events_ppl = pd.read_csv(Path.join("raw_data", "raw_all.csv"))
+        data_scraped = pd.read_csv(Path.join("raw_data", "raw_scrapped.csv"))
     else:
         print(Fore.RED + "\nMODEL_TARGET not set, exiting" + Style.RESET_ALL)
         return(None,None)
-
-    # Clean Data
-#     clean_data()
-#     return dict({'data_all' : data_events_ppl,
-#                  'data_dcrapped' : data_scraped,
-#                  'data_events' : data_events_series
-#     })
-
-
 
     return clean_data(data_events_ppl, data_scraped)
 

@@ -23,22 +23,35 @@ def transform_jobDuration(X: pd.DataFrame):
     '''
     Transforming Job Duration from linked in months.
     e.g. 2 years 10 months = 34 mon (parts = 4)
-         4 months = 5 mon (parts = 2)
+         4 months = 4 mon (parts = 2)
     '''
-    parts = X.applymap(lambda x: str(x).split())
-    years = 0
-    months = 0
 
-    # Getting the exact element of years and months
-    if len(parts) == 4:
-        years = int(parts[0])
-        months = int(parts[2])
-    elif len(parts) == 2:
+    def calc_months(duration):
+        parts = str(duration).split()
         years = 0
-        months = int(parts[0])
+        months = 0
 
-    total_mos = (years * 12) + months
-    return total_mos
+        # Getting the exact element of years and months
+        if len(parts) == 4:
+            years = int(parts[0])
+            months = int(parts[2])
+        elif len(parts) == 2:
+            if parts[1] == 'yr':
+                years = int(parts[0])
+                months = 0
+            elif parts[1] == 'mos':
+                years = 0
+                months = int(parts[0])
+
+        total_mos = (years * 12) + months
+        return total_mos
+
+    X['jobDuration'] = X['jobDuration'].apply(lambda x: calc_months(x))
+
+    X['jobDuration2'] = X['jobDuration2'].apply(lambda x: calc_months(x))
+
+    return X[['jobDuration', 'jobDuration2']]
+
 
 
 def transform_SchoolPassed(X):
@@ -47,8 +60,9 @@ def transform_SchoolPassed(X):
     of years from current year since he passed his last school
     '''
     def calc_years(schoolyear):
-        breakpoint()
-        if ~pd.isna(schoolyear):
+        if pd.isna(schoolyear):
+           years = np.nan
+        else :
             tokens = str(schoolyear).split()
             year_schoolEnd = int(tokens[-1])
 
@@ -58,11 +72,9 @@ def transform_SchoolPassed(X):
             # Extract the year from the current date
             current_year = current_date.year
             years = int(current_year - year_schoolEnd)
-        else :
-            years = np.nan
         return years
 
-    years = X.apply(lambda x : calc_years(x), axis = 1)
+    years = X.map(lambda x : calc_years(x))
     return years
 
 def transform_location(X: pd.DataFrame):

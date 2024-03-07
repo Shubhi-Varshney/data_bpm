@@ -1,18 +1,15 @@
 import glob
 import os
-import time
 import pickle
 
 from colorama import Fore, Style
-from tensorflow import keras
 from google.cloud import storage
 
-from bpm.params import *
-import mlflow
-from mlflow.tracking import MlflowClient
+from data_bpm.params import *
 
 
-def load_model(stage="Production") -> keras.Model:
+
+def load_model(stage="Production") -> pickle:
     """
     Return a saved model:
     - locally (latest one in alphabetical order)
@@ -22,12 +19,13 @@ def load_model(stage="Production") -> keras.Model:
     Return None (but do not Raise) if no model is found
 
     """
-
+    print(works)
     if MODEL_TARGET == "local":
         print(Fore.BLUE + f"\nLoad latest model from local registry..." + Style.RESET_ALL)
 
         # Get the latest model version name by the timestamp on disk
-        local_model_directory = os.path.join(LOCAL_REGISTRY_PATH, "models")
+        local_model_directory = os.path.join(LOCAL_REGISTRY_PATH) #, "models")
+        print(local_model_directory)
         local_model_paths = glob.glob(f"{local_model_directory}/*")
 
         if not local_model_paths:
@@ -37,8 +35,8 @@ def load_model(stage="Production") -> keras.Model:
 
         print(Fore.BLUE + f"\nLoad latest model from disk..." + Style.RESET_ALL)
 
-        latest_model = keras.models.load_model(most_recent_model_path_on_disk)
-
+        latest_model = pickle.load(open(most_recent_model_path_on_disk, 'rb'))
+        
         print("✅ Model loaded from local disk")
 
         return latest_model
@@ -55,8 +53,8 @@ def load_model(stage="Production") -> keras.Model:
             latest_model_path_to_save = os.path.join(LOCAL_REGISTRY_PATH, latest_blob.name)
             latest_blob.download_to_filename(latest_model_path_to_save)
 
-            latest_model = keras.models.load_model(latest_model_path_to_save)
-
+            latest_model = pickle.load(open(latest_model_path_to_save, 'rb'))
+            
             print("✅ Latest model downloaded from cloud storage")
 
             return latest_model
@@ -66,3 +64,8 @@ def load_model(stage="Production") -> keras.Model:
             return None
     else:
         return None
+
+def load_pickle_model():
+    model_path ="//wsl.localhost/Ubuntu/home/dhodal/code/Shubhi-Varshney/data-bpm/raw_data"
+    latest_model = pickle.load(open(model_path, 'rb'))
+    return latest_model

@@ -7,7 +7,7 @@ import numpy as np
 import string as str
 import unicodedata
 
-def clean_data(data_events_ppl,data_scraped):
+def clean_data(data_events_ppl, data_scraped):
     '''
     Clean the data, merge the three files and returns a single datframe
     MVP: merging only the first two files
@@ -183,6 +183,8 @@ def get_data():
 #                  'data_dcrapped' : data_scraped,
 #                  'data_events' : data_events_series
 #     })
+
+
 
     return clean_data(data_events_ppl, data_scraped)
 

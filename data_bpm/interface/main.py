@@ -11,7 +11,10 @@ def preprocess():
     print(data_for_ml.info())
     print(data_for_analytics)
     print(data_for_analytics.info())
-    data_for_analytics.to_csv('raw_data/data_for_analytics.csv')
+
+    # Uncomment if you want to save a cleaned intermidiate data
+    data_for_ml.to_csv('raw_data/data_for_ml.csv')
+    # data_for_analytics.to_csv('raw_data/data_for_analytics.csv')
 
 def train():
     pass

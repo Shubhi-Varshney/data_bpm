@@ -5,14 +5,15 @@ from sklearn.impute import SimpleImputer
 from sklearn.pipeline import make_pipeline
 
 from data_bpm.ml_logic.data import load_data_to_bq
-from data_bpm.ml_logic.encoders import transform_jobDateRange, transform_jobDuration, transform_SchoolPassed
+from data_bpm.ml_logic.encoders import transform_jobDateRange, transform_jobDuration, transform_SchoolPassed, transform_metadata
 
 def preprocess_features(X: pd.DataFrame):
 
     # Preprocess features
     # Feature Selection from the merged dataset
-    selected_features = [ 'company', 'jobTitle', 'jobDuration', 'jobDateRange', 'jobTitle2', 'jobDuration2', 'schoolDateRange', 'schoolDegree', 'skill1', 'skill2', 'skill3']
-    df = X[selected_features]
+    selected_features = [ 'headline','description', 'jobTitle' ,'jobDescription','jobDuration', 'jobDateRange', 'jobTitle2', 'jobDuration2', 'schoolDateRange', 'skill1', 'skill2', 'skill3']
+    metadata_columns = ['headline','description', 'jobTitle','jobDescription','jobTitle2', 'skill1', 'skill2', 'skill3']
+    X = X[selected_features]
 
     # Function Transformer for employment
     employment_pipe = FunctionTransformer(transform_jobDateRange)
@@ -26,11 +27,14 @@ def preprocess_features(X: pd.DataFrame):
                         SimpleImputer(strategy='mean')
     )
 
+    metadata_pipe = FunctionTransformer(transform_metadata)
+
     final_preprocessor = ColumnTransformer(
             [
                 ("employment_pipe", employment_pipe, ["jobDateRange"]),
                 ("job_duration_pipe", job_duration_pipe, ["jobDuration", "jobDuration2"] ),
-                ("schoolPassed_pipe", schoolPassed_pipe, ["schoolDateRange"] )
+                ("schoolPassed_pipe", schoolPassed_pipe, ["schoolDateRange"]),
+                ('metadata_pipe', metadata_pipe, metadata_columns)
             ],
             remainder='passthrough',
         )

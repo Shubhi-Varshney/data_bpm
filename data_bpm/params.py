@@ -17,6 +17,8 @@ INSTANCE = os.environ.get("INSTANCE")
 # PREFECT_FLOW_NAME = os.environ.get("PREFECT_FLOW_NAME")
 # PREFECT_LOG_LEVEL = os.environ.get("PREFECT_LOG_LEVEL")
 
+SVD_COMPONENTS = 15
+
 # GAR_IMAGE = os.environ.get("GAR_IMAGE")
 # GAR_MEMORY = os.environ.get("GAR_MEMORY")
 

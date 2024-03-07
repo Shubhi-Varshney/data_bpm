@@ -118,7 +118,6 @@ def clean_data(data_events_ppl, data_scraped):
     merged_df['Choose your role.1'].fillna(merged_df['jobTitle2'], inplace=True)
     data_analytics['Choose your role.1'] = merged_df['Choose your role.1']
 
-
     return (data_merged, data_analytics)
 
 def get_data():

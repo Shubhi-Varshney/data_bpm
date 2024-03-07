@@ -5,9 +5,6 @@ from data_bpm.ml_logic.data import get_data, clean_data
 from data_bpm.ml_logic.preprocessor import preprocess_features
 
 def preprocess():
-    ## Load the data
-
-    #return " @@@@ Hello "
     # data_for_ml, data_for_analytics = get_data()
     # print(data_for_ml)
     # print(data_for_ml.info())
@@ -15,7 +12,11 @@ def preprocess():
     # print(data_for_analytics.info())
     # data_for_analytics.to_csv('raw_data/data_for_analytics.csv')
     data_for_ml = pd.read_csv('raw_data/data_for_ml.csv')
-
+    
+    # Uncomment if you want to save a cleaned intermidiate data
+    # data_for_ml.to_csv('raw_data/data_for_ml.csv')
+    # data_for_analytics.to_csv('raw_data/data_for_analytics.csv')
+    
     preprocess_features(data_for_ml)
 
 def train():

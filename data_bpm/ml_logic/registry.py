@@ -5,7 +5,6 @@ import time
 
 from colorama import Fore, Style
 from google.cloud import storage
-from tensorflow import keras
 
 from data_bpm.params import *
 

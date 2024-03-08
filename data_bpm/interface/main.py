@@ -18,7 +18,7 @@ def preprocess():
     data_for_ml.to_csv('raw_data/data_for_ml.csv')
     data_for_analytics.to_csv('raw_data/data_for_analytics.csv')
 
-def train(save):
+def train(save=False):
     pass
 
 def evaluate():

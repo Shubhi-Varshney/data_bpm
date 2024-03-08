@@ -1,7 +1,7 @@
 import os
 import numpy as np
 
-MODEL_TARGET = 'mlflow' # os.environ.get("MODEL_TARGET")
+MODEL_TARGET = 'local' # os.environ.get("MODEL_TARGET")
 
 ##################  GCP VARIABLES  ##################
 GCP_PROJECT = os.environ.get("GCP_PROJECT")

@@ -1,7 +1,8 @@
-import pandas as pdf
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from data_bpm.interface.main import *
 
 
 app = FastAPI()
@@ -15,11 +16,11 @@ app.add_middleware(
 )
 
 
-# app.state.model = load_model()
+app.state.model = load_model()
 
 # @app.get('/predict')
 # def suggestion(features):
-#     # Compute attendee course suggestion 
+#     # Compute attendee course suggestion
 #     model = app.state.model`
 #     course = 1 # compute course selection -> to be done
     # model = app.state.model

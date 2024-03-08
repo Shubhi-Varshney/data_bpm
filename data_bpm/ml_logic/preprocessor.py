@@ -6,13 +6,13 @@ from sklearn.pipeline import make_pipeline
 
 from data_bpm.ml_logic.data import load_data_to_bq
 from data_bpm.ml_logic.encoders import transform_jobDateRange, transform_jobDuration, transform_SchoolPassed, transform_metadata
-
+from data_bpm.params import *
 def preprocess_features(X: pd.DataFrame):
 
     # Preprocess features
     # Feature Selection from the merged dataset
-    selected_features = [ 'headline','description', 'jobTitle' ,'jobDescription','jobDuration', 'jobDateRange', 'jobTitle2', 'jobDuration2', 'schoolDateRange', 'skill1', 'skill2', 'skill3']
-    metadata_columns = ['headline','description', 'jobTitle','jobDescription','jobTitle2', 'skill1', 'skill2', 'skill3']
+    selected_features = COLUMN_NAMES_RAW
+    metadata_columns = COLUMN_NAMES_METADATA
     X = X[selected_features]
 
     # Function Transformer for employment

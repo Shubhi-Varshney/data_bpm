@@ -1,7 +1,5 @@
-# 1> TO-DO decide local environment (from arguement)
-# 2> Figure about global environments (PORT)
 
-FROM 
+FROM python:3.10.6-buster
 
 COPY requirements.text requirements.txt
 RUN pip install -r requirements.txt

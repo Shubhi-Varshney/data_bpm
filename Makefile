@@ -33,14 +33,10 @@ run_train:
 ################### LOCAL REGISTRY ################
 
 # Data sources: targets for monthly data imports
-ML_DIR=~/.lewagon/mlops
+LOCAL_REGISTRY_PATH =  ~/.lewagon/data_bpm
 
 reset_local_files:
-	rm -rf ${ML_DIR}
-	mkdir -p ~/.lewagon/mlops/data/
-	mkdir ~/.lewagon/mlops/data/raw
-	mkdir ~/.lewagon/mlops/data/processed
-	mkdir ~/.lewagon/mlops/training_outputs
-	mkdir ~/.lewagon/mlops/training_outputs/metrics
-	mkdir ~/.lewagon/mlops/training_outputs/models
-	mkdir ~/.lewagon/mlops/training_outputs/params
+	rm -rf ${LOCAL_REGISTRY_PATH}
+	mkdir -p ${LOCAL_REGISTRY_PATH}
+	mkdir ${LOCAL_REGISTRY_PATH}/training_outputs
+	mkdir ${LOCAL_REGISTRY_PATH}/training_outputs/models

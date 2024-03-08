@@ -1,7 +1,7 @@
 import os
 import numpy as np
 
-MODEL_TARGET = 'mlflow' # os.environ.get("MODEL_TARGET")
+MODEL_TARGET = 'local' # os.environ.get("MODEL_TARGET")
 
 ##################  GCP VARIABLES  ##################
 GCP_PROJECT = os.environ.get("GCP_PROJECT")
@@ -21,8 +21,11 @@ MLFLOW_EXPERIMENT='data_bpm_experiment_sydd'
 MLFLOW_MODEL_NAME='data_bpm_experiment_sydd'
 
 ##################  CONSTANTS  #####################
-LOCAL_DATA_PATH = os.path.join(os.path.curdir(), "raw_data")
-LOCAL_REGISTRY_PATH =  os.path.join(os.path.expanduser('~'), ".lewagon", "data_bpm", "training_outputs")
+#LOCAL_DATA_PATH = os.path.join(os.path.curdir(), "raw_data")
+#LOCAL_REGISTRY_PATH =  os.path.join(os.path.expanduser('~'), ".lewagon", "data_bpm", "training_outputs")
+
+
+LOCAL_REGISTRY_PATH =  '~/.lewagon/data_bpm'
 
 
 ##################  PREPROCESSOR PARAMS  #####################

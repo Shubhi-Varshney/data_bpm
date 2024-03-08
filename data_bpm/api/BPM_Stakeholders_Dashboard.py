@@ -159,10 +159,21 @@ with col[0]:
 with col[1]:
     st.markdown('#### Community Growth')
 
-    list_l = [25, 50, 235, 230, 670, 950, 1800]
-    list_2 = [0, 0, 0, 350, 550, 800, 1000]
-    list_3 = [4, 12, 25, 30, 50, 70, 80]
-    list_4 = [0, 1, 2, 3, 4, 5, 6]
+    df_line = pd.read_excel("/home/dhodal/code/Shubhi-Varshney/data-bpm/raw_data/Community Growth.xlsx")
+    headers = df_line.iloc[0]
+    df_line_renamed  = pd.DataFrame(df_line.values[1:], columns=headers)
+    df_line_renamed['Newsletter'] = df_line_renamed['Newsletter'].fillna(0)
+    months = ["August", "September", "October", "November", "December", "January", "February", "March"]
+    # number
+    # list_l = list(df_line_renamed['LinkedIn'].iloc[:(selected_event)])
+    # list_2 = list(df_line_renamed['Newsletter'].iloc[:(selected_event)])
+    # list_3 = list(df_line_renamed['Instagram'].iloc[:(selected_event)])
+    # list_4 = months[selected_event]
+    list_l = [25, 50, 135, 230, 670, 950]
+    list_2 = [0, 0, 0, 350, 550, 800]
+    list_3 = [4, 12, 25, 30, 50, 50]
+    list_4 = [1, 2, 3, 4, 5, 6]
+    
     dict_growth = {
         "LinkedIn": list_l,
         "M": list_2,
@@ -183,7 +194,19 @@ with col[1]:
     label = ["Registered", "Ticket", "Wait list", "Confirmed", "Cancelled", "Admitted", "No show"]
     source = [0, 0, 1, 1, 2, 3, 3]
     target = [1, 2, 3, 4, 3, 5, 6]
+    # [san_registered, san_ticketed, san_wait_list, cancelled, confirmed, admitted]
     value = [204, 91, 113, 90, 48, 71, 18]
+    
+    
+    # san_registered 
+    # san_ticketed
+    # san_wait_list
+    # cancelled
+    # confirmed
+    # admitted
+    
+    
+    
     link= dict(source = source, target = target, value = value,)
     node = dict(label = label, pad = 35, thickness = 10)
     data = go.Sankey(link = link, node = node)

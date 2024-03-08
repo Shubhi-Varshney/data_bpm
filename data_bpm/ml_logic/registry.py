@@ -22,11 +22,9 @@ def save_model(model=None):
     timestamp = time.strftime("%Y%m%d-%H%M%S")
 
     # Save model locally
-    model_path = os.path.join(LOCAL_REGISTRY_PATH, "training_outputs", "models", f"{timestamp}.pickle")
+    model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", f"{timestamp}.pickle")
     with open(model_path, 'wb') as f:
         pickle.dump(model, f)
-
-    pickle.dump(model, open(model_path, "wb") )
 
     print("✅ Model saved locally")
 
@@ -41,6 +39,17 @@ def save_model(model=None):
         print("✅ Model saved to MLflow")
 
     return None
+
+def save_results(cleaned_ml_data, labels):
+    '''
+    Saving the cluster result to the original dataframe
+    '''
+    cleaned_ml_data['dbscan_cluster'] = labels
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+
+    model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", f"clusters_{timestamp}.csv")
+
+    cleaned_ml_data.to_csv(model_path)
 
 
 def load_model(stage="Production"):

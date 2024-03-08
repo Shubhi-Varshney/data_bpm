@@ -15,7 +15,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-# app.state.model = load_model()
+app.state.model = load_model()
 
 @app.post("/predict")
 def predict(payload: dict):
@@ -37,8 +37,9 @@ def predict(payload: dict):
     try:
         # y_pred_proba = app.state.model.predict_proba(X_processed)
         # Assuming y_pred_proba is a single probability value for positive class
-        positive_probability = 1 # float(y_pred_proba[0, 1])
-        return {'probability_to_attend': positive_probability}
+        # positive_probability = 1 # float(y_pred_proba[0, 1])
+        # return {'probability_to_attend': positive_probability}
+        return app.state.model.predict(X_processed)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

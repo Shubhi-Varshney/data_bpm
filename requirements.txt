@@ -20,7 +20,7 @@ nltk
 streamlit
 
 altair
-
+openpyxl
 plotly
 plotly.express
 

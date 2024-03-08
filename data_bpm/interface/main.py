@@ -29,7 +29,6 @@ def train(save=False):
     - Train on the preprocessed dataset
     - Save the model and the labels
     """
-
     print(Fore.MAGENTA + "\n⭐️ Use case: train" + Style.RESET_ALL)
 
     raw_ml_data = pd.read_csv("raw_data/data_for_ml.csv")
@@ -50,6 +49,9 @@ def train(save=False):
         # Saving the clusters returned by the model in the original raw ml_data
         save_results(raw_ml_data, model.labels_)
 
+def train_model2(save=False):
+    pass
+
 def evaluate():
     pass
 
@@ -65,5 +67,6 @@ def pred():
 if __name__ == '__main__':
     # preprocess()
     # train()
+    train_model2()
     # evaluate()
     pred()

@@ -26,7 +26,7 @@ LOCAL_REGISTRY_PATH =  os.path.join(os.path.expanduser('~'), ".lewagon", "data_b
 
 
 # LOCAL_REGISTRY_PATH =  '~/.lewagon/data_bpm'
-#LOCAL_REGISTRY_PATH =  '/home/shubhi/.lewagon/data_bpm'
+# LOCAL_REGISTRY_PATH =  '/home/shubhi/.lewagon/data_bpm'
 
 ##################  PREPROCESSOR PARAMS  #####################
 COLUMN_NAMES_RAW = [ 'headline','description', 'jobTitle' ,'jobDescription','jobDuration', 'jobDateRange', 'jobTitle2', 'jobDuration2', 'schoolDateRange', 'skill1', 'skill2', 'skill3']

@@ -6,7 +6,7 @@ from colorama import Fore, Style
 
 from data_bpm.ml_logic.data import get_data, clean_data
 from data_bpm.ml_logic.preprocessor import preprocess_features
-from data_bpm.ml_logic.registry import load_model, save_model
+from data_bpm.ml_logic.registry import load_model, save_model, save_results
 from data_bpm.ml_logic.model import train_model
 
 def preprocess():
@@ -48,16 +48,22 @@ def train(save=False):
 
         # Save resuts
         # Saving the clusters returned by the model in the original raw ml_data
-        # save_results(model.labels_)
+        save_results(raw_ml_data, model.labels_)
 
 def evaluate():
     pass
 
 def pred():
-    pass
+
+    X_pred = pd.read_csv("raw_data/predict.csv")
+    X_processed = preprocess_features(X_pred)
+
+    # Train model using `model.py`
+    model = load_model()
+    print(model.predict(X_processed))
 
 if __name__ == '__main__':
-    #preprocess()
+    # preprocess()
     # train()
     # evaluate()
     pred()

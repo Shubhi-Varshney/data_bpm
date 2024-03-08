@@ -23,11 +23,8 @@ def save_model(model=None):
 
     # Save model locally
     model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", f"{timestamp}.pickle")
-    # model_path = "/home/shubhi/code/Shubhi-Varshney/data-bpm/data_bpm/interface/model/dummy.pickle"
     with open(model_path, 'wb') as f:
         pickle.dump(model, f)
-
-    # pickle.dump(model, open(model_path, "wb") )
 
     print("✅ Model saved locally")
 
@@ -43,8 +40,17 @@ def save_model(model=None):
 
     return None
 
-def save_results(labels):
-    pass
+def save_results(cleaned_ml_data, labels):
+    '''
+    Saving the cluster result to the original dataframe
+    '''
+    cleaned_ml_data['dbscan_cluster'] = labels
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+
+    model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", f"clusters_{timestamp}.csv")
+
+    cleaned_ml_data.to_csv(model_path)
+
 
 def load_model(stage="Production"):
     """

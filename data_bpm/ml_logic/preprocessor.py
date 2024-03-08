@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.preprocessing import OneHotEncoder, FunctionTransformer, StandardScaler
+from sklearn.preprocessing import OneHotEncoder, FunctionTransformer, MinMaxScaler
 from sklearn.compose import ColumnTransformer, make_column_transformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import make_pipeline
@@ -29,7 +29,7 @@ def preprocess_features(X: pd.DataFrame):
 
     metadata_pipe = FunctionTransformer(transform_metadata)
 
-    final_preprocessor = ColumnTransformer(
+    preprocessor_pipe = ColumnTransformer(
             [
                 ("employment_pipe", employment_pipe, ["jobDateRange"]),
                 ("job_duration_pipe", job_duration_pipe, ["jobDuration", "jobDuration2"] ),
@@ -38,6 +38,12 @@ def preprocess_features(X: pd.DataFrame):
             ],
             remainder='passthrough',
         )
+
+    final_preprocessor = make_pipeline(
+                preprocessor_pipe,
+                MinMaxScaler()
+
+    )
 
     X_processed = final_preprocessor.fit_transform(X)
     print(X_processed[:5, :5])

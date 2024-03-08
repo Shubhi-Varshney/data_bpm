@@ -22,9 +22,11 @@ def save_model(model=None):
     timestamp = time.strftime("%Y%m%d-%H%M%S")
 
     # Save model locally
-    model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", f"{timestamp}.pkl")
+    model_path = os.path.join(LOCAL_REGISTRY_PATH, "training_outputs", "models", f"{timestamp}.pickle")
     with open(model_path, 'wb') as f:
         pickle.dump(model, f)
+
+    pickle.dump(model, open(model_path, "wb") )
 
     print("✅ Model saved locally")
 

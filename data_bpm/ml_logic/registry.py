@@ -74,7 +74,7 @@ def load_model(stage="Production"):
 
         most_recent_model_path_on_disk = sorted(local_model_paths)[-1]
 
-        print(Fore.BLUE + f"\nLoad latest model from disk..." + Style.RESET_ALL)
+        print(Fore.BLUE + f"\nLoading latest model from disk..." + Style.RESET_ALL)
 
         # Load model from disk using pickle
         with open(most_recent_model_path_on_disk, 'rb') as f:

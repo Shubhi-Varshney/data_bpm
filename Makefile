@@ -18,7 +18,7 @@ clean:
 
 # run_train -s will train the model and pickle (save) it
 run_train:
-  python -c 'from data_bpm.interface.main import  train; train(save_model=$(if $(filter -s,$(MAKEFLAGS)),True,False))'
+	python -c 'from data_bpm.interface.main import train; train(save_model=True if "-s" in "$(MAKEFLAGS)" else False)'
  	#python -c 'from data_bpm.interface.main import train; train()'
 
 # run_pred:

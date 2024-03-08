@@ -20,7 +20,7 @@ nltk
 streamlit
 
 altair
-
+openpyxl
 plotly
 plotly.express
 
@@ -30,5 +30,3 @@ uvicorn
 fastapi
 colorama
 pytz
-
-mlflow

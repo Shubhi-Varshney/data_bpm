@@ -42,7 +42,6 @@ def preprocess_features(X: pd.DataFrame):
     final_preprocessor = make_pipeline(
                 preprocessor_pipe,
                 MinMaxScaler()
-
     )
 
     X_processed = final_preprocessor.fit_transform(X)

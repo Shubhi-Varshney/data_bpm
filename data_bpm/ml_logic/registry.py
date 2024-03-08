@@ -22,11 +22,12 @@ def save_model(model=None):
     timestamp = time.strftime("%Y%m%d-%H%M%S")
 
     # Save model locally
-    model_path = os.path.join(LOCAL_REGISTRY_PATH, "training_outputs", "models", f"{timestamp}.pickle")
+    model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", f"{timestamp}.pickle")
+    # model_path = "/home/shubhi/code/Shubhi-Varshney/data-bpm/data_bpm/interface/model/dummy.pickle"
     with open(model_path, 'wb') as f:
         pickle.dump(model, f)
 
-    pickle.dump(model, open(model_path, "wb") )
+    # pickle.dump(model, open(model_path, "wb") )
 
     print("✅ Model saved locally")
 
@@ -42,6 +43,8 @@ def save_model(model=None):
 
     return None
 
+def save_results(labels):
+    pass
 
 def load_model(stage="Production"):
     """

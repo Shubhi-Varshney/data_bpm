@@ -26,7 +26,7 @@ def train(save=False):
     """
     - Get the raw ML data
     - Preprocess it
-    - Train on the preprocessed dataset
+    - Train the clustering model on the preprocessed dataset
     - Save the model and the labels
     """
     print(Fore.MAGENTA + "\n⭐️ Use case: train" + Style.RESET_ALL)
@@ -43,14 +43,39 @@ def train(save=False):
         model = train_model(X_processed)
 
         # Save model
-        save_model(model)
+        if save == True:
+            save_model(model)
+            # Save resuts
+            # Saving the clusters returned by the model in the original raw ml_data
+            save_results(raw_ml_data, model.labels_)
 
-        # Save resuts
-        # Saving the clusters returned by the model in the original raw ml_data
-        save_results(raw_ml_data, model.labels_)
 
 def train_model2(save=False):
-    pass
+    """
+    - Get the raw ML data
+    - Preprocess it
+    - Train the classification model on the preprocessed dataset
+    - Save the model and the labels
+    """
+    print(Fore.MAGENTA + "\n⭐️ Use case: train_model2" + Style.RESET_ALL)
+
+    raw_ml_data = pd.read_csv("raw_data/data_for_ml.csv")
+    print(Fore.BLUE + "\n Preprocessing the raw data.." + Style.RESET_ALL)
+    X_processed = preprocess_features(raw_ml_data)
+
+    # Train model using `model.py`
+    model = load_model()
+
+    if model is None:
+        print(Fore.BLUE + "\n Training the model.." + Style.RESET_ALL)
+        model = train_model(X_processed)
+
+        # Save model
+        if save == True:
+            save_model(model)
+            # Save resuts
+            # Saving the clusters returned by the model in the original raw ml_data
+            save_results(raw_ml_data, model.labels_)
 
 def evaluate():
     pass
@@ -64,9 +89,28 @@ def pred():
     model = load_model()
     print(model.predict(X_processed))
 
+def similar_users():
+    '''
+    Find top n similar users of a new/existing user
+    '''
+    raw_ml_data = pd.read_csv("raw_data/data_for_ml.csv")
+    print(Fore.BLUE + "\n Preprocessing the raw data.." + Style.RESET_ALL)
+
+    # preprocess_pipeline = load_preprocessor()
+
+    print(Fore.BLUE + "\n Reading the predict.csv.." + Style.RESET_ALL)
+    X_pred = pd.read_csv("raw_data/predict.csv")
+
+    # X_processed = preprocess_features(raw_ml_data)
+    # X_processed_train = preprocess_pipeline.transform(raw_ml_data)
+    # X_processed_pred = preprocess_pipeline.transform(X_pred)
+
+
+
 if __name__ == '__main__':
     # preprocess()
     # train()
     train_model2()
     # evaluate()
-    pred()
+    # pred()
+    similar_users()

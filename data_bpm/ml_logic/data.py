@@ -48,8 +48,24 @@ def clean_data(data_events_ppl, data_scraped):
                       ]
 
     # Create a dictionary to specify aggregation functions for each column
-    agg_dict = {'Event': 'count'}
+
+    def calculate_attended(group):
+
+        # Get the last event for the group
+        last_event = group.iloc[-1]
+
+        #breakpoint()
+
+        # Check if the last event's Attendee Status is "Checked In"
+        if last_event == 'Checked In':
+            return 1
+        else:
+            return 0
+
+
+    agg_dict = {'Event': 'count', 'Attendee Status': calculate_attended }
     agg_dict.update({column: first_non_null for column in columns_to_agg})
+    # Group by UserID and apply the calculate_attended function
 
     # Group by 'fullName' and apply aggregation
     unique_attendees = data_events_ppl.groupby(by='fullName', as_index=False).agg(agg_dict)
@@ -72,6 +88,7 @@ def clean_data(data_events_ppl, data_scraped):
     data_scraped['company'] = data_scraped['company'].fillna('').str.lower().str.strip()
 
     data_scraped['UserID'] = float('nan')
+    data_scraped['Attendance'] = 0
     # Iterate through each row in the ids DataFrame
     for j, row_ids in unique_attendees.iterrows():
         # Iterate through each row in the scraped DataFrame
@@ -80,6 +97,7 @@ def clean_data(data_events_ppl, data_scraped):
             if custom_user_matching(row_scraped, row_ids):
                 # If a match is found, add the userID from the ids DataFrame to the scraped DataFrame
                 data_scraped.at[index_scraped, 'UserID'] = row_ids['UserID']
+                data_scraped.at[index_scraped, 'Attendance'] = row_ids['Attendee Status']
                 break
     # Drop rows with NaN values in the 'UserID' column
     data_merged = data_scraped.dropna(subset=['UserID'])

@@ -24,7 +24,6 @@ MLFLOW_MODEL_NAME='data_bpm_experiment_sydd'
 #LOCAL_DATA_PATH = os.path.join(os.path.curdir(), "raw_data")
 LOCAL_REGISTRY_PATH =  os.path.join(os.path.expanduser('~'), ".lewagon", "data_bpm", "training_outputs")
 
-
 # LOCAL_REGISTRY_PATH =  '~/.lewagon/data_bpm'
 #LOCAL_REGISTRY_PATH =  '/home/shubhi/.lewagon/data_bpm'
 

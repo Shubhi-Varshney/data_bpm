@@ -22,11 +22,9 @@ def save_model(model=None):
     timestamp = time.strftime("%Y%m%d-%H%M%S")
 
     # Save model locally
-    model_path = os.path.join(LOCAL_REGISTRY_PATH, "training_outputs", "models", f"{timestamp}.pickle")
+    model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", f"{timestamp}.pickle")
     with open(model_path, 'wb') as f:
         pickle.dump(model, f)
-
-    pickle.dump(model, open(model_path, "wb") )
 
     print("✅ Model saved locally")
 
@@ -41,6 +39,17 @@ def save_model(model=None):
         print("✅ Model saved to MLflow")
 
     return None
+
+def save_results(cleaned_ml_data, labels):
+    '''
+    Saving the cluster result to the original dataframe
+    '''
+    cleaned_ml_data['dbscan_cluster'] = labels
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+
+    model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", f"clusters_{timestamp}.csv")
+
+    cleaned_ml_data.to_csv(model_path)
 
 
 def load_model(stage="Production"):
@@ -65,7 +74,7 @@ def load_model(stage="Production"):
 
         most_recent_model_path_on_disk = sorted(local_model_paths)[-1]
 
-        print(Fore.BLUE + f"\nLoad latest model from disk..." + Style.RESET_ALL)
+        print(Fore.BLUE + f"\nLoading latest model from disk..." + Style.RESET_ALL)
 
         # Load model from disk using pickle
         with open(most_recent_model_path_on_disk, 'rb') as f:
@@ -158,3 +167,29 @@ def mlflow_run(func):
 
         return results
     return wrapper
+
+def save_preproc_pipeline(preproc_pipe=None):
+
+    pipe_path = os.path.join(LOCAL_REGISTRY_PATH, "models","preproc_pipeline.pkl")
+    print(Fore.BLUE + f"\nSaving preprocessing pipeline from local disk..." + Style.RESET_ALL)
+    with open(pipe_path, 'wb') as f:
+        pickle.dump(preproc_pipe, f)
+        print("✅ Preprocessing pipeline saved locally")
+
+    return None
+
+
+def load_preproc_pipeline():
+    # Load the fitted pipeline from the file
+
+    local_pipe_path = os.path.join(LOCAL_REGISTRY_PATH, "models","preproc_pipeline.pkl")
+
+    if not local_pipe_path:
+        return None
+
+    print(Fore.BLUE + f"\nLoad preprocessing pipeline from local disk..." + Style.RESET_ALL)
+
+    with open('preproc_pipeline.pkl', 'rb') as f:
+        preproc_pipe =  pickle.load(f)
+
+    print("✅ Preprocessing pipeline loaded from local disk")

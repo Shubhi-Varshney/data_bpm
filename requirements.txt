@@ -18,7 +18,7 @@ nltk
 ### STREAMLIT ###
 
 streamlit
-
+python-multipart
 altair
 openpyxl
 plotly

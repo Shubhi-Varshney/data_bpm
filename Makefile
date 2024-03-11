@@ -42,3 +42,4 @@ reset_local_files:
 	mkdir -p ${LOCAL_REGISTRY_PATH}
 	mkdir ${LOCAL_REGISTRY_PATH}/training_outputs
 	mkdir ${LOCAL_REGISTRY_PATH}/training_outputs/models
+	mkdir ${LOCAL_REGISTRY_PATH}/training_outputs/pipes

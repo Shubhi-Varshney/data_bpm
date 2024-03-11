@@ -13,6 +13,8 @@ def preprocess_features(X: pd.DataFrame, save_pipeline = True):
 
     # Preprocess features
     # Feature Selection from the merged dataset
+
+
     selected_features = COLUMN_NAMES_RAW
     metadata_columns = COLUMN_NAMES_METADATA
     X = X[selected_features]
@@ -46,7 +48,8 @@ def preprocess_features(X: pd.DataFrame, save_pipeline = True):
                 MinMaxScaler()
     )
 
-    X_processed = final_preprocessor.fit_transform(X)
+    final_preprocessor = final_preprocessor.fit(X)
+    X_processed = final_preprocessor.transform(X)
     # print(X_processed[:5, :5])
 
     print("✅ X_processed, with shape", X_processed.shape)

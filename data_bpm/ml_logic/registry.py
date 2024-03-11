@@ -19,6 +19,7 @@ def save_model(model=None):
     - if MODEL_TARGET='mlflow', also persist it on MLflow
     """
 
+    breakpoint()
     timestamp = time.strftime("%Y%m%d-%H%M%S")
 
     # Save model locally
@@ -170,7 +171,7 @@ def mlflow_run(func):
 
 def save_preproc_pipeline(preproc_pipe=None):
 
-    pipe_path = os.path.join(LOCAL_REGISTRY_PATH, "models","preproc_pipeline.pkl")
+    pipe_path = os.path.join(LOCAL_REGISTRY_PATH, "pipes", "preproc_pipeline.pkl")
     print(Fore.BLUE + f"\nSaving preprocessing pipeline from local disk..." + Style.RESET_ALL)
     with open(pipe_path, 'wb') as f:
         pickle.dump(preproc_pipe, f)
@@ -182,14 +183,16 @@ def save_preproc_pipeline(preproc_pipe=None):
 def load_preproc_pipeline():
     # Load the fitted pipeline from the file
 
-    local_pipe_path = os.path.join(LOCAL_REGISTRY_PATH, "models","preproc_pipeline.pkl")
+    local_pipe_path = os.path.join(LOCAL_REGISTRY_PATH, "pipes", "preproc_pipeline.pkl")
 
     if not local_pipe_path:
         return None
 
     print(Fore.BLUE + f"\nLoad preprocessing pipeline from local disk..." + Style.RESET_ALL)
 
-    with open('preproc_pipeline.pkl', 'rb') as f:
+    with open(local_pipe_path, 'rb') as f:
         preproc_pipe =  pickle.load(f)
 
     print("✅ Preprocessing pipeline loaded from local disk")
+
+    return preproc_pipe

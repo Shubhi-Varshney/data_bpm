@@ -11,6 +11,7 @@ import data_bpm.api.bpm
 st.markdown("# Prediction")
 st.sidebar.markdown("# Prediction")
 
+app.state.model = load_model()
 
 # Function to call predict API
 def call_predict_api(payload):
@@ -55,17 +56,20 @@ if st.button("Predict"):
     
 
 
+        # y_pred_proba = app.state.model.predict_proba(X_processed)
+        # # Assuming y_pred_proba is a single probability value for positive class
+        # positive_probability = float(y_pred_proba[0, 1])
+        # return {'probability_to_attend': positive_probability}
 
 
+# ml_data = pd.read_csv('/home/dhodal/code/Shubhi-Varshney/data-bpm/raw_data/ml_data_clusters.csv')
 
-ml_data = pd.read_csv('/home/dhodal/code/Shubhi-Varshney/data-bpm/raw_data/ml_data_clusters.csv')
+# fig_scatter = px.scatter_3d(ml_data,
+#                     x = 'jobTitle',
+#                     y = 'jobTitle2',
+#                     z = 'jobDuration',
+#                     opacity=0.7, width=500, height=500,
+#                     color='dbscan_cluster',
+#            )
 
-fig_scatter = px.scatter_3d(ml_data,
-                    x = 'jobTitle',
-                    y = 'jobTitle2',
-                    z = 'jobDuration',
-                    opacity=0.7, width=500, height=500,
-                    color='dbscan_cluster',
-           )
-
-st.plotly_chart(fig_scatter, use_container_width=True, )
+# st.plotly_chart(fig_scatter, use_container_width=True, )

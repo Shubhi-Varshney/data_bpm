@@ -5,11 +5,13 @@ import pandas as pd
 import altair as alt
 import plotly.express as px
 import plotly.graph_objects as go
+import gcsfs
+
 
 #######################
 # Page configuration
 st.set_page_config(
-    page_title="BPM Stakeholders Dashboard",
+    page_title="BPM Community Breakdown",
     # page_icon="🏂",
     layout="wide",
     initial_sidebar_state="expanded")
@@ -19,10 +21,37 @@ alt.themes.enable("dark")
 
 #######################
 # Load data
-    ### TO-DO   --> add correct data
-df_reshaped = pd.read_csv('/home/dhodal/code/Shubhi-Varshney/data-bpm/raw_data/cleaned_data_for_ml.csv')
-df_analytics = pd.read_csv('/home/dhodal/code/Shubhi-Varshney/data-bpm/raw_data/data_for_analytics.csv')
 
+### Local
+    ### TO-DO   --> add correct data
+# df_reshaped = pd.read_csv('/home/dhodal/code/Shubhi-Varshney/data-bpm/raw_data/cleaned_data_for_ml.csv')
+# df_analytics = pd.read_csv('/home/dhodal/code/Shubhi-Varshney/data-bpm/raw_data/data_for_analytics.csv')
+
+
+### GCS
+bucket_name = 'taxifare_d-hodal'
+file_path_analytics = 'data_for_analytics.csv'
+file_path_ml = "cleaned_data_for_ml.csv"
+file_path_cg = "Community Growth.xlsx"
+
+# Create a file system object using gcsfs
+fs = gcsfs.GCSFileSystem()
+
+with fs.open(f'{bucket_name}/{file_path_analytics}') as f:
+    df_gcs_an = pd.read_csv(f)
+
+with fs.open(f'{bucket_name}/{file_path_ml}') as g:
+    df_gcs_ml = pd.read_csv(g)
+
+with fs.open(f'{bucket_name}/{file_path_cg}') as h:
+    df_gcs_cg = pd.read_excel(h)
+
+df_analytics = df_gcs_an
+df_reshaped = df_gcs_ml
+df_line = df_gcs_cg
+######################
+# Colors
+color_bpm_logo = '#c'
 
 
 #######################
@@ -41,17 +70,20 @@ with st.sidebar:
     # with.st.sidebar.beta_container()
     with st.expander('About', expanded=False):
         st.write('''
-            Made with 🖤 from Berlin,
-Shubhi Jain (https://www.linkedin.com/in/email-shubhi-jain/),
-Dominic Hodal (email),
-Yulia Vilensky (https://www.linkedin.com/in/yulia-vilensky/)
+            Made with 🖤 from Berlin,\n
+Shubhi Jain, Dominic Hodal, Yulia Vilensky
             ''')
 
 
+# (https://www.linkedin.com/in/email-shubhi-jain/)
+# (https://www.linkedin.com/in/yulia-vilensky/)
+
 # Contents of ~/my_app/main_page.py
 
-st.markdown("# BPM Stakeholders Dashboard")
-st.sidebar.markdown("# BPM Stakeholders Dashboard")
+
+st.markdown('<span style="font-size: 50px; color: #00FF00;">BPM Community Dashboard</span>', unsafe_allow_html=True)
+#st.markdown("<h1 style='text-align: center; color: red;'>Some title</h1>", unsafe_allow_html=True)
+st.sidebar.markdown("# BPM Community Dashboard")
 
 
 #    df_selected_event = df_reshaped[df_reshaped.event == selected_event]
@@ -62,68 +94,15 @@ st.sidebar.markdown("# BPM Stakeholders Dashboard")
 
 
 
-# Donut chart
-# def make_donut(input_response, input_text, input_color):
-#   if input_color == 'blue':
-#       chart_color = ['#29b5e8', '#155F7A']
-#   if input_color == 'green':
-#       chart_color = ['#27AE60', '#12783D']
-#   if input_color == 'orange':
-#       chart_color = ['#F39C12', '#875A12']
-#   if input_color == 'red':
-#       chart_color = ['#E74C3C', '#781F16']
-    
-#   source = pd.DataFrame({
-#       "Topic": ['', input_text],
-#       "% value": [100-input_response, input_response]
-#   })
-#   source_bg = pd.DataFrame({
-#       "Topic": ['', input_text],
-#       "% value": [100, 0]
-#   })
-    
-#   plot = alt.Chart(source).mark_arc(innerRadius=45, cornerRadius=25).encode(
-#       theta="% value",
-#       color= alt.Color("Topic:N",
-#                       scale=alt.Scale(
-#                           #domain=['A', 'B'],
-#                           domain=[input_text, ''],
-#                           # range=['#29b5e8', '#155F7A']),  # 31333F
-#                           range=chart_color),
-#                       legend=None),
-#   ).properties(width=130, height=130)
-    
-#   text = plot.mark_text(align='center', color="#29b5e8", font="Lato", fontSize=32, fontWeight=700, fontStyle="italic").encode(text=alt.value(f'{input_response} %'))
-#   plot_bg = alt.Chart(source_bg).mark_arc(innerRadius=45, cornerRadius=20).encode(
-#       theta="% value",
-#       color= alt.Color("Topic:N",
-#                       scale=alt.Scale(
-#                           # domain=['A', 'B'],
-#                           domain=[input_text, ''],
-#                           range=chart_color),  # 31333F
-#                       legend=None),
-#   ).properties(width=130, height=130)
-#   return plot_bg + plot + text
-
-
-
 
 #######################
 # Dashboard Main Panel
 col = st.columns((2, 4, 2), gap='medium')
 
 with col[0]:
-    st.markdown('#### Event Attendance'
-                
-    """
-<style>
-[data-testid="stMetricLabel"] {
-    font-size: 100px;
-}
-</style>
-""",
-    unsafe_allow_html=True,
-)
+    st.markdown('#### Event Attendance')
+     #st.markdown("<h1 style='text-align: center; color: red;'>Some title</h1>", unsafe_allow_html=True)
+           
     
     event_mask = df_analytics["Event"] == selected_event
     df_event_masked = df_analytics[event_mask]
@@ -149,8 +128,12 @@ with col[0]:
     df_analytics_masked = df_analytics[mask]
     df_job_position = pd.DataFrame(df_analytics_masked["Your Job Position"].value_counts().reset_index())
     
-    fig_pie = px.pie(df_job_position, values='count', names='Your Job Position')
+    pie_colors = ["#0000db","#FF3A06","#5E57FF", "#F23CA6", "#FF9535", "#4BFF36", "#02FEE4"] #  "#1c0159","#22016d","#b697ff","#d3c0ff","#9362ff","#a881ff"
     
+    fig_pie = px.pie(df_job_position, values='count', names='Your Job Position', ) # 
+    fig_pie.update_layout(showlegend=False, )
+    fig_pie.update_traces(hoverinfo='label+percent',
+                  marker=dict(colors=pie_colors, ))
   
     st.plotly_chart(fig_pie, use_container_width=True,sharing="streamlit", )
     
@@ -159,31 +142,73 @@ with col[0]:
 with col[1]:
     st.markdown('#### Community Growth')
 
-    list_l = [25, 50, 235, 230, 670, 950, 1800]
-    list_2 = [0, 0, 0, 350, 550, 800, 1000]
-    list_3 = [4, 12, 25, 30, 50, 70, 80]
-    list_4 = [0, 1, 2, 3, 4, 5, 6]
+    # df_line = pd.read_excel("/home/dhodal/code/Shubhi-Varshney/data-bpm/raw_data/Community Growth.xlsx")
+    headers = df_line.iloc[0]
+    df_line_renamed  = pd.DataFrame(df_line.values[1:], columns=headers)
+    df_line_renamed['Newsletter'] = df_line_renamed['Newsletter'].fillna(0)
+    months = ["August", "September", "October", "November", "December", "January", "February", "March"]
+    # number
+    list_l = list(df_line_renamed['LinkedIn'].iloc[:(selected_event+ 2)])
+    list_2 = list(df_line_renamed['Newsletter'].iloc[:(selected_event+ 2)])
+    list_3 = list(df_line_renamed['Instagram'].iloc[:(selected_event+ 2)])
+    list_4 = months[:(selected_event + 2)]
+    # list_l = [25, 50, 135, 230, 670, 950]
+    # list_2 = [0, 0, 0, 350, 550, 800]
+    # list_3 = [4, 12, 25, 30, 50, 50]
+    # list_4 = [1, 2, 3, 4, 5, 6]
+    
     dict_growth = {
         "LinkedIn": list_l,
-        "M": list_2,
+        "Mailing list": list_2,
         "Instagram": list_3,
         "Month": list_4
     }
     df_com_growth = pd.DataFrame(dict_growth)
     
-    st.line_chart(
-   df_com_growth, x="Month", y=["LinkedIn", "M", "Instagram"], color=["#FF0000", "#0000FF", "#00FF00"]  # Optional
-)
+    fig_line = go.Figure(data=go.Line(x=df_com_growth["Month"], y=df_com_growth["LinkedIn"], name="LinkedIn", line_color="#FF0000"))
+    fig_line.add_scatter(x=df_com_growth["Month"], y=df_com_growth["Mailing list"], name="Mailing list", line_color="#0000FF")
+    fig_line.add_scatter(x=df_com_growth["Month"], y=df_com_growth["Instagram"], name="Instagram", line_color="#00FF00")
+
+# Update layout to change x-axis labels
+    fig_line.update_layout(xaxis=dict(
+        tickvals=[0, 1, 2, 3, 4, 5, 6, 7],  # Positions of the ticks on the axis
+        ticktext=months  # Labels for the ticks
+))
+  
+    st.plotly_chart(fig_line, use_container_width=True,)
+    
+#     st.line_chart(
+#    df_com_growth, x="Month", y=["LinkedIn", "M", "Instagram"], color=["#FF0000", "#0000FF", "#00FF00"]  # Optional
+# )
     
 
 
 with col[1]:
     st.markdown('#### Registration Flow')
+     
+    # event_mask = df_analytics["Event"] == selected_event
+    # df_event_masked = df_analytics[event_mask]
+    df_event_status = df_event_masked["Attendee Status"].value_counts()
+    attended  = df_event_status["Attending"]
+    signed_up = df_event_status["Checked In"]
+    registered = attended + signed_up
+    cancelled = df_event_status["Not Attending"]
+
+    	
+    san_registered = cancelled + signed_up
+    san_ticketed = attended + cancelled
+    san_wait_list = san_registered - san_ticketed
+    cancelled = cancelled
+    confirmed = signed_up
+    admitted = attended
+    no_show = confirmed - admitted
     
     label = ["Registered", "Ticket", "Wait list", "Confirmed", "Cancelled", "Admitted", "No show"]
     source = [0, 0, 1, 1, 2, 3, 3]
     target = [1, 2, 3, 4, 3, 5, 6]
-    value = [204, 91, 113, 90, 48, 71, 18]
+    value = [san_registered, san_ticketed, san_wait_list, cancelled, confirmed, admitted, no_show]
+   # value = [204, 91, 113, 90, 48, 71, 18] 
+    
     link= dict(source = source, target = target, value = value,)
     node = dict(label = label, pad = 35, thickness = 10)
     data = go.Sankey(link = link, node = node)
@@ -196,12 +221,7 @@ with col[1]:
     
     st.plotly_chart(fig_san, use_container_width=True, sharing="streamlit",)
 
-    
-    # choropleth = make_choropleth(df_selected_year, 'states_code', 'population', selected_color_theme)
-    # st.plotly_chart(choropleth, use_container_width=True)
-    
-    # heatmap = make_heatmap(df_reshaped, 'year', 'states', 'population', selected_color_theme)
-    # st.altair_chart(heatmap, use_container_width=True)
+
     
 
 with col[2]:

@@ -23,6 +23,8 @@ altair
 openpyxl
 plotly
 plotly.express
+plotly.graph_objects
+gcsfs
 
 #### API ###
 

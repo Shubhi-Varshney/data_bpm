@@ -6,12 +6,11 @@ import altair as alt
 import plotly.express as px
 import plotly.graph_objects as go
 import requests
-import data_bpm.api.bpm 
-from data_bpm.params import COLUMN_NAMES_RAW
+
 st.markdown("# Prediction")
 st.sidebar.markdown("# Prediction")
 
-app.state.model = load_model()
+# app.state.model = load_model()
 
 # Function to call predict API
 def call_predict_api(payload):

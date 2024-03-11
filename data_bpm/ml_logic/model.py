@@ -1,23 +1,27 @@
 from sklearn.cluster import KMeans, DBSCAN
 from sklearn.metrics import silhouette_score
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.svm import SVC
+from scipy import stats
 
 from colorama import Fore, Style
 import pandas as pd
 import numpy as np
 
+from data_bpm import params
 
 def train_model(
         X_processed : pd.DataFrame
     ) :
 
     """
-    1. Get the raw data
-    2. Get the pre-processed data from the pipeline
-    3. Implement the model
-    4. Return the model   """
+    1. Get the pre-processed data from the pipeline
+    2. Implement the model
+    3. Return the model   """
 
     # $CODE_BEGIN
-    print(Fore.BLUE + "\nPreprocessing the model..." + Style.RESET_ALL)
+    print(Fore.BLUE + "\Training the model..." + Style.RESET_ALL)
 
     model = DBSCAN(eps=0.836842, min_samples=25)
     model.fit(X_processed)
@@ -29,3 +33,53 @@ def train_model(
     print(f"✅ Model trained with clusters: {no_of_clusters} and silhouette_score: {score}")
 
     return model
+
+def train_model_2(
+        X_processed : pd.DataFrame,
+        y_train : pd.DataFrame
+    ) :
+
+    """
+    1. Get the pre-processed data from the pipeline
+    2. Implement the classification model
+    3. Return the model   """
+
+    # $CODE_BEGIN
+    print(Fore.BLUE + "\nTraining the model..." + Style.RESET_ALL)
+
+    model = SVC()
+
+    grid = { 'kernel' : ['linear', 'rbf', 'sigmoid'],
+        'C' : [0.01, 0.1, 1, 10, 100],
+        'gamma' : stats.uniform()
+    }
+
+    randsearch = RandomizedSearchCV(estimator=model, param_distributions=grid, n_iter=500, scoring='accuracy', n_jobs=-1)
+
+    randsearch.fit(X_processed, y_train)
+
+    final_model = randsearch.best_estimator_
+
+    # $CODE_END
+
+    print(f"✅ SVM Model trained with best params: {randsearch.best_params_} and best score: {randsearch.best_score_}")
+
+    return final_model
+
+
+def similar_users(X_train_users_proc, X_new_user_proc):
+
+    # return the indices of top_n similar users to the new user (used in prediction website)
+    # X_train_users_proc = preprocessed final features of the trianing data
+    # X_new_user_proc = preprocessed final features of the new user
+
+    # Compute cosine similarity between the new user and each user in the training dataset
+    similarities = cosine_similarity(X_new_user_proc.reshape(1, -1), X_train_users_proc)
+
+    # Get indices of users sorted by cosine similarity (from highest to lowest)
+    similar_users_indices = np.argsort(similarities)[0][::-1]
+
+    # Select top-N similar users
+    top_n = params.TOP_SIMILAR_USERS # Number of similar users to consider
+
+    return similar_users_indices[:top_n]

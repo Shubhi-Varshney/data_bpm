@@ -80,16 +80,18 @@ Shubhi Jain, Dominic Hodal, Yulia Vilensky
 
 # Contents of ~/my_app/main_page.py
 
-
-st.markdown('<span style="font-size: 50px; color: #00FF00;">BPM Community Dashboard</span>', unsafe_allow_html=True)
+col_title = st.columns((2, 6), gap="medium")
+with col_title[1]: 
+    st.markdown('<span style="text-align: center; font-size: 50px; color: #519FFF;">BPM Community Dashboard</span>', unsafe_allow_html=True)
 #st.markdown("<h1 style='text-align: center; color: red;'>Some title</h1>", unsafe_allow_html=True)
+ # text-align: center;
 st.sidebar.markdown("# BPM Community Dashboard")
 
 
 #    df_selected_event = df_reshaped[df_reshaped.event == selected_event]
 #    df_selected_event_sorted = df_selected_event.sort_values(by="population", ascending=False) # <-- to be changed
 
-    # color_theme_list = ['blues', 'cividis', 'greens', 'inferno', 'magma', 'plasma', 'reds', 'rainbow', 'turbo', 'viridis']
+    #color_theme_list = ['blues', 'cividis', 'greens', 'inferno', 'magma', 'plasma', 'reds', 'rainbow', 'turbo', 'viridis']
     # selected_color_theme = st.selectbox('Select a color theme', color_theme_list)
 
 
@@ -100,35 +102,35 @@ st.sidebar.markdown("# BPM Community Dashboard")
 col = st.columns((2, 4, 2), gap='medium')
 
 with col[0]:
-    st.markdown('#### Event Attendance')
+    st.markdown('<span style="font-size: 30px; color: #04F5C0;">Event Attendance</span>', unsafe_allow_html=True)
      #st.markdown("<h1 style='text-align: center; color: red;'>Some title</h1>", unsafe_allow_html=True)
            
     
     event_mask = df_analytics["Event"] == selected_event
     df_event_masked = df_analytics[event_mask]
     df_event_status = df_event_masked["Attendee Status"].value_counts()
-    attended  = df_event_status["Checked In"]
-    signed_up = df_event_masked["Attendee Status"].value_counts().sum()
+   # attended  = df_event_status["Attending"]
+    attended = df_event_status["Checked In"]
+    venue_size = df_line['Venues management '].iloc[selected_event + 1]
 
-
-    at_percent_ = (attended / signed_up)*100
+    at_percent_ = (attended / venue_size)*100
     at_percent = round(at_percent_, 1)
 
     col1, col2, col3 = st.columns(3)
     col1.metric("$\large Attendance$", f"{attended}")
-    col2.metric("$\large Registered$", f"{signed_up}")
+    col2.metric("$\large Venue Size$", f"{venue_size}")
     col3.metric("$\large Conversion$", f"{at_percent}%")
 
 
 
 with col[0]:
-    st.markdown('#### Attendee Breakdown')
+    st.markdown('<span style="font-size: 30px; color: #04F5C0;">Attendee Breakdown</span>', unsafe_allow_html=True)
 
     mask = df_analytics["Event"] == selected_event
     df_analytics_masked = df_analytics[mask]
     df_job_position = pd.DataFrame(df_analytics_masked["Your Job Position"].value_counts().reset_index())
     
-    pie_colors = ["#0000db","#FF3A06","#5E57FF", "#F23CA6", "#FF9535", "#4BFF36", "#02FEE4"] #  "#1c0159","#22016d","#b697ff","#d3c0ff","#9362ff","#a881ff"
+    pie_colors = ["#81D3C1", "#717c89","#8aa2a9","#90baad","#a1e5ab","#adf6b1", "#C1F9C4"] # ["#0000db","#FF3A06","#5E57FF", "#F23CA6", "#FF9535", "#4BFF36", "#02FEE4"] #  "#1c0159","#22016d","#b697ff","#d3c0ff","#9362ff","#a881ff"
     
     fig_pie = px.pie(df_job_position, values='count', names='Your Job Position', ) # 
     fig_pie.update_layout(showlegend=False, )
@@ -140,7 +142,7 @@ with col[0]:
 
 
 with col[1]:
-    st.markdown('#### Community Growth')
+    st.markdown('<span style="font-size: 30px; color: #4778FF;">Community Growth</span>', unsafe_allow_html=True)
 
     # df_line = pd.read_excel("/home/dhodal/code/Shubhi-Varshney/data-bpm/raw_data/Community Growth.xlsx")
     headers = df_line.iloc[0]
@@ -165,9 +167,9 @@ with col[1]:
     }
     df_com_growth = pd.DataFrame(dict_growth)
     
-    fig_line = go.Figure(data=go.Line(x=df_com_growth["Month"], y=df_com_growth["LinkedIn"], name="LinkedIn", line_color="#FF0000"))
-    fig_line.add_scatter(x=df_com_growth["Month"], y=df_com_growth["Mailing list"], name="Mailing list", line_color="#0000FF")
-    fig_line.add_scatter(x=df_com_growth["Month"], y=df_com_growth["Instagram"], name="Instagram", line_color="#00FF00")
+    fig_line = go.Figure(data=go.Line(x=df_com_growth["Month"], y=df_com_growth["LinkedIn"], name="LinkedIn", line_color="#F82274"))
+    fig_line.add_scatter(x=df_com_growth["Month"], y=df_com_growth["Mailing list"], name="Mailing list", line_color="#225DFF")
+    fig_line.add_scatter(x=df_com_growth["Month"], y=df_com_growth["Instagram"], name="Instagram", line_color="#00FFE1")
 
 # Update layout to change x-axis labels
     fig_line.update_layout(xaxis=dict(
@@ -184,33 +186,42 @@ with col[1]:
 
 
 with col[1]:
-    st.markdown('#### Registration Flow')
+    st.markdown('<span style="font-size: 30px; color: #4778FF;">Registration Flow</span>', unsafe_allow_html=True)
      
     # event_mask = df_analytics["Event"] == selected_event
     # df_event_masked = df_analytics[event_mask]
     df_event_status = df_event_masked["Attendee Status"].value_counts()
-    attended  = df_event_status["Attending"]
-    signed_up = df_event_status["Checked In"]
-    registered = attended + signed_up
+    attended  = df_event_status["Checked In"]
+    no_show  = df_event_status["Attending"]
     cancelled = df_event_status["Not Attending"]
-
-    	
-    san_registered = cancelled + signed_up
-    san_ticketed = attended + cancelled
+    registered = attended + no_show + cancelled
+    # Overbooking ticket capacity
+    event_ticket_opened = df_line['Unnamed: 5'].iloc[selected_event + 1]
+    # Registered for event
+    san_registered = registered
+    # Got event ticket
+    san_ticketed = event_ticket_opened
+    # On event wait-list
     san_wait_list = san_registered - san_ticketed
+    # Cancelled event ticket before event
     cancelled = cancelled
-    confirmed = signed_up
+    # Had event ticket on day of event
+    confirmed = attended + no_show
+    # Actually attended the event
     admitted = attended
+    # Didn't attend but had a ticket
     no_show = confirmed - admitted
     
     label = ["Registered", "Ticket", "Wait list", "Confirmed", "Cancelled", "Admitted", "No show"]
     source = [0, 0, 1, 1, 2, 3, 3]
     target = [1, 2, 3, 4, 3, 5, 6]
-    value = [san_registered, san_ticketed, san_wait_list, cancelled, confirmed, admitted, no_show]
+    value = [san_registered, event_ticket_opened, san_wait_list, confirmed, cancelled, admitted, no_show]
    # value = [204, 91, 113, 90, 48, 71, 18] 
     
-    link= dict(source = source, target = target, value = value,)
-    node = dict(label = label, pad = 35, thickness = 10)
+    color_san = ["#00487c","#4bb3fd","#3e6680","#0496ff", "#F82274", "#00FFE1", "#225DFF",]
+    
+    link= dict(source = source, target = target, value = value, color="#90BAAD")
+    node = dict(label = label, pad = 35, thickness = 10, color=color_san)
     data = go.Sankey(link = link, node = node)
 
     fig_san = go.Figure(data)
@@ -226,7 +237,7 @@ with col[1]:
 
 with col[2]:
     df_attendees = pd.DataFrame(df_reshaped["company"].value_counts().reset_index())
-    st.markdown('#### Top Companies')
+    st.markdown('<span style="font-size: 30px; color: #F171A2;">Top Companies</span>', unsafe_allow_html=True)
 
     st.dataframe(df_attendees,
                  column_order=("company", "count"),

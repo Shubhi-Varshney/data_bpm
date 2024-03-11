@@ -160,7 +160,8 @@ def similar_users():
     # X_processed_train = preprocess_pipeline.transform(raw_ml_data)
     # X_processed_pred = preprocess_pipeline.transform(X_pred)
 
-
+def test_method():
+    pass
 
 if __name__ == '__main__':
     # preprocess()
@@ -168,4 +169,5 @@ if __name__ == '__main__':
     # train_model2(save=True)
     # evaluate()
     pred()
+    test_method()
     # similar_users()

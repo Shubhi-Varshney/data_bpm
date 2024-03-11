@@ -58,6 +58,3 @@ def preprocess_features(X: pd.DataFrame, save_pipeline = True):
         save_preproc_pipeline(final_preprocessor)
 
     return X_processed
-
-    # After preprocessing, load the preprocessed data into bigquery
-    # load_data_to_bq()

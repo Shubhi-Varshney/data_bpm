@@ -3,12 +3,14 @@ import datetime
 import numpy as np
 import re # REGEX
 import string
+from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import TruncatedSVD
 from data_bpm import params
+
+#nltk.download('stopwords')
 
 def transform_jobDateRange(X: pd.DataFrame):
     '''
@@ -112,7 +114,6 @@ def transform_metadata(df):
     # Apply SVD
     svd = TruncatedSVD(n_components=params.SVD_COMPONENTS)
     latent_df = svd.fit_transform(count_df)
-
 
     return pd.DataFrame(latent_df)
 

@@ -3,6 +3,7 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 import json
+from data_bpm.ml_logic.registry import load_model, load_preproc_pipeline
 from data_bpm.interface.main import *
 from data_bpm.params import *
 app = FastAPI()
@@ -15,7 +16,8 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-# app.state.model = load_model()
+app.state.model = load_model()
+app.state.preproc_pipe = load_preproc_pipeline()
 
 @app.post("/predict")
 def predict(File: UploadFile=File(...)):
@@ -24,14 +26,15 @@ def predict(File: UploadFile=File(...)):
     df_json = json.loads(decode)
     X_pred = pd.DataFrame(df_json)
     print(X_pred)
-    X_processed = preprocess_features(X_pred)
+    X_processed = app.state.preproc_pipe.transform(X_pred)
     print(X_processed)
     # Make prediction
     try:
         # y_pred_proba = app.state.model.predict_proba(X_processed)
         # Assuming y_pred_proba is a single probability value for positive class
-        positive_probability = 1 # float(y_pred_proba[0, 1])
-        return {'probability_to_attend': positive_probability}
+        # positive_probability = 1 # float(y_pred_proba[0, 1])
+        # return {'probability_to_attend': positive_probability}
+        return app.state.model.predict(X_processed)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -7,8 +7,9 @@ from sklearn.pipeline import make_pipeline
 from data_bpm.ml_logic.data import load_data_to_bq
 from data_bpm.ml_logic.encoders import transform_jobDateRange, transform_jobDuration, transform_SchoolPassed, transform_metadata
 from data_bpm.params import *
+from data_bpm.ml_logic.registry import save_preproc_pipeline
 
-def preprocess_features(X: pd.DataFrame):
+def preprocess_features(X: pd.DataFrame, save_pipeline = True):
 
     # Preprocess features
     # Feature Selection from the merged dataset
@@ -43,13 +44,15 @@ def preprocess_features(X: pd.DataFrame):
     final_preprocessor = make_pipeline(
                 preprocessor_pipe,
                 MinMaxScaler()
-
     )
 
     X_processed = final_preprocessor.fit_transform(X)
     # print(X_processed[:5, :5])
 
     print("✅ X_processed, with shape", X_processed.shape)
+
+    if save_pipeline == True:
+        save_preproc_pipeline(final_preprocessor)
 
     return X_processed
 

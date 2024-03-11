@@ -171,7 +171,13 @@ def mlflow_run(func):
 
 def save_preproc_pipeline(preproc_pipe=None):
 
-    pipe_path = os.path.join(LOCAL_REGISTRY_PATH, "pipes", "preproc_pipeline.pkl")
+    local_reg_path = os.path.join(LOCAL_REGISTRY_PATH, "pipes")
+
+    if not os.path.exists(local_reg_path):
+        print(Fore.RED + f"\nLocal registery path not found.\nRun make reset_local_files" + Style.RESET_ALL)
+        return None
+
+    pipe_path = os.path.join(LOCAL_REGISTRY_PATH, "pipes","preproc_pipeline.pkl")
     print(Fore.BLUE + f"\nSaving preprocessing pipeline from local disk..." + Style.RESET_ALL)
     with open(pipe_path, 'wb') as f:
         pickle.dump(preproc_pipe, f)
@@ -183,14 +189,15 @@ def save_preproc_pipeline(preproc_pipe=None):
 def load_preproc_pipeline():
     # Load the fitted pipeline from the file
 
-    local_pipe_path = os.path.join(LOCAL_REGISTRY_PATH, "pipes", "preproc_pipeline.pkl")
+    local_pipe_path = os.path.join(LOCAL_REGISTRY_PATH, "pipes","preproc_pipeline.pkl")
 
-    if not local_pipe_path:
+    if not os.path.exists(local_pipe_path):
+        print(Fore.RED + f"\nPreprocessing pipeline not found on local disk..." + Style.RESET_ALL)
         return None
 
     print(Fore.BLUE + f"\nLoad preprocessing pipeline from local disk..." + Style.RESET_ALL)
 
-    with open(local_pipe_path, 'rb') as f:
+    with open('preproc_pipeline.pkl', 'rb') as f:
         preproc_pipe =  pickle.load(f)
 
     print("✅ Preprocessing pipeline loaded from local disk")

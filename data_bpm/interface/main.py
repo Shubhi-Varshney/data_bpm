@@ -18,17 +18,15 @@ def preprocess():
 
     # ----- Toggle if you want to read the saved version of merged intermediate data
     # print(Fore.BLUE + "\n Reading the saved merged raw data.." + Style.RESET_ALL)
-    # data_for_ml = pd.read_csv('../raw_data/data_for_ml.csv',index_col=0)
-    # data_for_analytics = pd.read_csv('../raw_data/data_for_analytics.csv',index_col=0)
-    # ----- Toggle if you want to read the saved version of merged intermediate data
+    # data_for_ml = pd.read_csv('raw_data/data_for_ml.csv',index_col=0)
+    # data_for_analytics = pd.read_csv('raw_data/data_for_analytics.csv',index_col=0)
 
     # ----- Toggle if you want to save a cleaned intermediate data
     print(Fore.BLUE + "\n Saving intermediate data to the raw_data.." + Style.RESET_ALL)
     data_for_ml.to_csv('raw_data/data_for_ml.csv')
     data_for_analytics.to_csv('raw_data/data_for_analytics.csv')
-    # ------Toggle if you want to save a cleaned intermediate data
 
-    X_processed = preprocess_features(data_for_ml.drop('Attendance', axis=1), save_pipeline = True)
+    X_processed = preprocess_features(data_for_ml.drop(columns=['Attendance']), save_pipeline = True)
     y_train = data_for_ml['Attendance']
     return (X_processed, y_train)
 
@@ -54,10 +52,9 @@ def train(save=False):
         # raw_ml_data = pd.read_csv("raw_data/data_for_ml.csv", index_col=0)
         # X_processed = preprocess_features(data_for_ml.drop('Attendance', axis=1))
         # y_train = data_for_ml['Attendance']
-        # ----- Uncomment if want to train the model from already merged data ----- #
 
         raw_ml_data = get_data()[0]
-        X_train = raw_ml_data.drop('Attendance', axis=1)
+        X_train = raw_ml_data.drop(columns=['Attendance'])
         X_processed = preproc_pipeline.transform(X_train)
 
     # Train model using `model.py`
@@ -84,38 +81,39 @@ def train_model2(save=False):
     """
 
     print(Fore.MAGENTA + "\n⭐️ Use case: train_model2" + Style.RESET_ALL)
+    print(Fore.BLUE + "\n Reading the saved merged raw data.." + Style.RESET_ALL)
+    data_for_ml = pd.read_csv("raw_data/data_for_ml.csv", index_col=0)
+    X_processed = preprocess_features(data_for_ml.drop(columns=['Attendance']), save_pipeline = True)
+    y_train = data_for_ml['Attendance']
 
-    print(Fore.BLUE + "\n Loading the pre-processing pipeline.." + Style.RESET_ALL)
-    preproc_pipeline = load_preproc_pipeline()
 
-    if preproc_pipeline == None:
-        print("Failed to load preproc pipeline")
-        print(Fore.BLUE + "\n Preprocessing the raw data.." + Style.RESET_ALL)
-        X_processed, y_train = preprocess()
-    else:
-        # ----- Uncomment if want to train the model from already merged data ----- #
-        # print(Fore.BLUE + "\n Reading the saved merged raw data.." + Style.RESET_ALL)
-        # raw_ml_data = pd.read_csv("raw_data/data_for_ml.csv", index_col=0)
-        # X_processed = preprocess_features(data_for_ml.drop('Attendance', axis=1))
-        # y_train = data_for_ml['Attendance']
-        # ----- Uncomment if want to train the model from already merged data ----- #
+    # print(Fore.BLUE + "\n Loading the pre-processing pipeline.." + Style.RESET_ALL)
+    # preproc_pipeline = load_preproc_pipeline()
 
-        raw_ml_data = get_data()[0]
-        X_train = raw_ml_data.drop('Attendance', axis=1)
-        y_train = raw_ml_data['Attendance']
-        X_processed = preproc_pipeline.transform(X_train)
+    # if preproc_pipeline == None:
+    #     print("Failed to load preproc pipeline")
+    #     print(Fore.BLUE + "\n Preprocessing the raw data.." + Style.RESET_ALL)
+    #     X_processed, y_train = preprocess()
+    # else:
+    #     # ----- Uncomment if want to train the model from already merged data ----- #
+    #     print(Fore.BLUE + "\n Reading the saved merged raw data.." + Style.RESET_ALL)
+    #     data_for_ml = pd.read_csv("raw_data/data_for_ml.csv", index_col=0)
+    #     # X_processed = preprocess_features(data_for_ml.drop('Attendance', axis=1))
+    #     # y_train = data_for_ml['Attendance']
+    #     #
+    #     y_train = data_for_ml['Attendance']
+    #     X_processed = preproc_pipeline.transform(data_for_ml.drop(columns=['Attendance']))
 
-    # Train model using `model.py`
-    model = load_model()
-    if model is None:
-        print(Fore.BLUE + "\n Training the model.." + Style.RESET_ALL)
+    # # Train model using `model.py`
+    # model = load_model()
+    # if model is None:
 
-        # To train a classification model
-        model = train_model_2(X_processed, y_train)
+    # To train a classification model
+    model = train_model_2(X_processed, y_train)
 
-        # Save model
-        if save == True:
-            save_model(model)
+    # Save model
+    if save == True:
+        save_model(model)
 
 
 def evaluate():
@@ -126,23 +124,26 @@ def pred():
     '''
     Predicting the probability of attending the event for a new/existing user
     '''
-    breakpoint()
     X_pred = pd.read_csv("raw_data/predict.csv")
     preproc_pipeline = load_preproc_pipeline()
 
     if preproc_pipeline == None:
-        print("Failed to load preproc pipeline")
-        print(Fore.BLUE + "\n Preprocessing the raw data.." + Style.RESET_ALL)
+        print(Fore.BLUE + "\n Failed to load preproc pipeline \n Preprocessing the raw data.." + Style.RESET_ALL)
         X_processed, y_train = preprocess()
         preproc_pipeline = load_preproc_pipeline()
-
 
     X_pred_process = preproc_pipeline.transform(X_pred)
 
     # Train model using `model.py`
     model = load_model()
 
-    print(model.predict(X_pred_process))
+    # Predict probability of a person to attend
+    probabilities = model.predict_proba(X_pred_process)
+
+    # Get probability of positive result (class 1)
+    positive_probabilities = probabilities[:, 1]
+
+    print(positive_probabilities)
 
 def similar_users():
     '''
@@ -164,10 +165,10 @@ def test_method():
     pass
 
 if __name__ == '__main__':
-    # preprocess()
+    #preprocess()
     # train()
-    # train_model2(save=True)
+    train_model2(save=True)
     # evaluate()
     pred()
-    test_method()
+    #test_method()
     # similar_users()

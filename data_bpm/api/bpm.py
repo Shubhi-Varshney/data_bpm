@@ -30,11 +30,11 @@ def predict(File: UploadFile=File(...)):
     print(X_processed)
     # Make prediction
     try:
-        # y_pred_proba = app.state.model.predict_proba(X_processed)
+        y_pred_proba = app.state.model.predict_proba(X_processed)
         # Assuming y_pred_proba is a single probability value for positive class
-        # positive_probability = 1 # float(y_pred_proba[0, 1])
-        # return {'probability_to_attend': positive_probability}
-        return app.state.model.predict(X_processed)
+        positive_probability = float(y_pred_proba[0, 1])
+        return {'probability_to_attend': positive_probability}
+        # return app.state.model.predict(X_processed)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

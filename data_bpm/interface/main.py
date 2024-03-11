@@ -15,7 +15,6 @@ def preprocess():
     #print(data_for_analytics.info())
     print(data_for_ml.sample(15))
     print(data_for_ml.info())
-    breakpoint()
     # data_for_ml = pd.read_csv('../raw_data/data_for_ml.csv',index_col=0)
     # data_for_analytics = pd.read_csv('../raw_data/data_for_analytics.csv',index_col=0)
     print(Fore.BLUE + "\n Saving intermediate data to the raw_data.." + Style.RESET_ALL)

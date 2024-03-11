@@ -80,8 +80,9 @@ Shubhi Jain, Dominic Hodal, Yulia Vilensky
 
 # Contents of ~/my_app/main_page.py
 
-
-st.markdown('<span style="font-size: 50px; color: #0000FF;">BPM Community Dashboard</span>', unsafe_allow_html=True)
+col_title = st.columns((2, 6), gap="medium")
+with col_title[1]: 
+    st.markdown('<span style="text-align: center; font-size: 50px; color: #519FFF;">BPM Community Dashboard</span>', unsafe_allow_html=True)
 #st.markdown("<h1 style='text-align: center; color: red;'>Some title</h1>", unsafe_allow_html=True)
  # text-align: center;
 st.sidebar.markdown("# BPM Community Dashboard")
@@ -101,7 +102,7 @@ st.sidebar.markdown("# BPM Community Dashboard")
 col = st.columns((2, 4, 2), gap='medium')
 
 with col[0]:
-    st.markdown('<span style="font-size: 30px; color: #00FF00;">Event Attendance</span>', unsafe_allow_html=True)
+    st.markdown('<span style="font-size: 30px; color: #04F5C0;">Event Attendance</span>', unsafe_allow_html=True)
      #st.markdown("<h1 style='text-align: center; color: red;'>Some title</h1>", unsafe_allow_html=True)
            
     
@@ -123,13 +124,13 @@ with col[0]:
 
 
 with col[0]:
-    st.markdown('<span style="font-size: 30px; color: #00FF00;">Attendee Breakdown</span>', unsafe_allow_html=True)
+    st.markdown('<span style="font-size: 30px; color: #04F5C0;">Attendee Breakdown</span>', unsafe_allow_html=True)
 
     mask = df_analytics["Event"] == selected_event
     df_analytics_masked = df_analytics[mask]
     df_job_position = pd.DataFrame(df_analytics_masked["Your Job Position"].value_counts().reset_index())
     
-    pie_colors = ["#0000db","#FF3A06","#5E57FF", "#F23CA6", "#FF9535", "#4BFF36", "#02FEE4"] #  "#1c0159","#22016d","#b697ff","#d3c0ff","#9362ff","#a881ff"
+    pie_colors = ["#81D3C1", "#717c89","#8aa2a9","#90baad","#a1e5ab","#adf6b1", "#C1F9C4"] # ["#0000db","#FF3A06","#5E57FF", "#F23CA6", "#FF9535", "#4BFF36", "#02FEE4"] #  "#1c0159","#22016d","#b697ff","#d3c0ff","#9362ff","#a881ff"
     
     fig_pie = px.pie(df_job_position, values='count', names='Your Job Position', ) # 
     fig_pie.update_layout(showlegend=False, )
@@ -141,7 +142,7 @@ with col[0]:
 
 
 with col[1]:
-    st.markdown('<span style="font-size: 30px; color: #0000FF;">Community Growth</span>', unsafe_allow_html=True)
+    st.markdown('<span style="font-size: 30px; color: #4778FF;">Community Growth</span>', unsafe_allow_html=True)
 
     # df_line = pd.read_excel("/home/dhodal/code/Shubhi-Varshney/data-bpm/raw_data/Community Growth.xlsx")
     headers = df_line.iloc[0]
@@ -166,9 +167,9 @@ with col[1]:
     }
     df_com_growth = pd.DataFrame(dict_growth)
     
-    fig_line = go.Figure(data=go.Line(x=df_com_growth["Month"], y=df_com_growth["LinkedIn"], name="LinkedIn", line_color="#FF0000"))
-    fig_line.add_scatter(x=df_com_growth["Month"], y=df_com_growth["Mailing list"], name="Mailing list", line_color="#0000FF")
-    fig_line.add_scatter(x=df_com_growth["Month"], y=df_com_growth["Instagram"], name="Instagram", line_color="#00FF00")
+    fig_line = go.Figure(data=go.Line(x=df_com_growth["Month"], y=df_com_growth["LinkedIn"], name="LinkedIn", line_color="#F82274"))
+    fig_line.add_scatter(x=df_com_growth["Month"], y=df_com_growth["Mailing list"], name="Mailing list", line_color="#225DFF")
+    fig_line.add_scatter(x=df_com_growth["Month"], y=df_com_growth["Instagram"], name="Instagram", line_color="#00FFE1")
 
 # Update layout to change x-axis labels
     fig_line.update_layout(xaxis=dict(
@@ -185,7 +186,7 @@ with col[1]:
 
 
 with col[1]:
-    st.markdown('<span style="font-size: 30px; color: #0000FF;">Registration Flow</span>', unsafe_allow_html=True)
+    st.markdown('<span style="font-size: 30px; color: #4778FF;">Registration Flow</span>', unsafe_allow_html=True)
      
     # event_mask = df_analytics["Event"] == selected_event
     # df_event_masked = df_analytics[event_mask]
@@ -217,7 +218,7 @@ with col[1]:
     value = [san_registered, event_ticket_opened, san_wait_list, confirmed, cancelled, admitted, no_show]
    # value = [204, 91, 113, 90, 48, 71, 18] 
     
-    color_san = ["#00487c","#4bb3fd","#3e6680","#0496ff","#027bce"]
+    color_san = ["#00487c","#4bb3fd","#3e6680","#0496ff", "#F82274", "#00FFE1", "#225DFF",]
     
     link= dict(source = source, target = target, value = value, color="#90BAAD")
     node = dict(label = label, pad = 35, thickness = 10, color=color_san)
@@ -236,7 +237,7 @@ with col[1]:
 
 with col[2]:
     df_attendees = pd.DataFrame(df_reshaped["company"].value_counts().reset_index())
-    st.markdown('<span style="font-size: 30px; color: #FF0000;">Top Companies</span>', unsafe_allow_html=True)
+    st.markdown('<span style="font-size: 30px; color: #F171A2;">Top Companies</span>', unsafe_allow_html=True)
 
     st.dataframe(df_attendees,
                  column_order=("company", "count"),

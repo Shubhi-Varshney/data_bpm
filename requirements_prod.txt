@@ -1,13 +1,7 @@
-pytest
-pylint
-ipdb
-jupyterlab
-notebook
 numpy
 pandas
-
+python-multipart
 scikit-learn
-ipdb
 google-cloud-bigquery
 google-cloud-storage
 mlflow
@@ -20,4 +14,3 @@ nltk
 uvicorn
 fastapi
 colorama
-pytz

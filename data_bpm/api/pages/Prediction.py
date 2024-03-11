@@ -7,6 +7,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import requests
 
+
 st.markdown("# Prediction")
 st.sidebar.markdown("# Prediction")
 
@@ -24,7 +25,7 @@ def call_predict_api(payload):
 
 
 
-    
+
 
 
 st.header("Make Prediction")
@@ -58,7 +59,7 @@ if st.button("Predict"):
         #                 pred = prediction
         # else:
         #     st.error("CSV file does not contain all required columns.")
-    
+
 
 
         # y_pred_proba = app.state.model.predict_proba(X_processed)

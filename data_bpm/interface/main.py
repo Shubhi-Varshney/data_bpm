@@ -18,9 +18,8 @@ def preprocess():
 
     # ----- Toggle if you want to read the saved version of merged intermediate data
     # print(Fore.BLUE + "\n Reading the saved merged raw data.." + Style.RESET_ALL)
-    # data_for_ml = pd.read_csv('../raw_data/data_for_ml.csv',index_col=0)
-    # data_for_analytics = pd.read_csv('../raw_data/data_for_analytics.csv',index_col=0)
-    # ----- Toggle if you want to read the saved version of merged intermediate data
+    # data_for_ml = pd.read_csv('raw_data/data_for_ml.csv',index_col=0)
+    # data_for_analytics = pd.read_csv('raw_data/data_for_analytics.csv',index_col=0)
 
     # ----- Toggle if you want to save a cleaned intermediate data
     print(Fore.BLUE + "\n Saving intermediate data to the raw_data.." + Style.RESET_ALL)
@@ -126,16 +125,13 @@ def pred():
     '''
     Predicting the probability of attending the event for a new/existing user
     '''
-    breakpoint()
     X_pred = pd.read_csv("raw_data/predict.csv")
     preproc_pipeline = load_preproc_pipeline()
 
     if preproc_pipeline == None:
-        print("Failed to load preproc pipeline")
-        print(Fore.BLUE + "\n Preprocessing the raw data.." + Style.RESET_ALL)
+        print(Fore.BLUE + "\n Failed to load preproc pipeline \n Preprocessing the raw data.." + Style.RESET_ALL)
         X_processed, y_train = preprocess()
         preproc_pipeline = load_preproc_pipeline()
-
 
     X_pred_process = preproc_pipeline.transform(X_pred)
 
@@ -164,7 +160,7 @@ def test_method():
     pass
 
 if __name__ == '__main__':
-    # preprocess()
+    preprocess()
     # train()
     # train_model2(save=True)
     # evaluate()

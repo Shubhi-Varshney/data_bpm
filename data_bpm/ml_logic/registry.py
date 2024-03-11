@@ -178,7 +178,7 @@ def save_preproc_pipeline(preproc_pipe=None):
         return None
 
     pipe_path = os.path.join(LOCAL_REGISTRY_PATH, "pipes","preproc_pipeline.pkl")
-    print(Fore.BLUE + f"\nSaving preprocessing pipeline from local disk..." + Style.RESET_ALL)
+    print(Fore.BLUE + f"\nSaving preprocessing pipeline to local disk..." + Style.RESET_ALL)
     with open(pipe_path, 'wb') as f:
         pickle.dump(preproc_pipe, f)
         print("✅ Preprocessing pipeline saved locally")

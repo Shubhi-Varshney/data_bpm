@@ -6,9 +6,6 @@ import string
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.decomposition import TruncatedSVD
-from data_bpm import params
 
 def transform_jobDateRange(X: pd.DataFrame):
     '''
@@ -105,16 +102,18 @@ def transform_metadata(df):
     df['metadata'] = df.metadata.apply(remove_stopwords)
     df['metadata'] = df.metadata.apply(lemma)
 
-    count = CountVectorizer(stop_words='english')
-    count_matrix = count.fit_transform(df['metadata'])
-    count_df = pd.DataFrame(count_matrix.toarray(), index=df.index.tolist())
+    return df[['metadata']]
 
-    # Apply SVD
-    svd = TruncatedSVD(n_components=params.SVD_COMPONENTS)
-    latent_df = svd.fit_transform(count_df)
+    # count = CountVectorizer(stop_words='english')
+    # count_matrix = count.fit_transform(df['metadata'])
+    # count_df = pd.DataFrame(count_matrix.toarray(), index=df.index.tolist())
+
+    # # Apply SVD
+    # svd = TruncatedSVD(n_components=params.SVD_COMPONENTS)
+    # latent_df = svd.fit_transform(count_df)
 
 
-    return pd.DataFrame(latent_df)
+    # return pd.DataFrame(latent_df)
 
 
 def basic_cleaning(sentence):

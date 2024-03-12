@@ -15,6 +15,13 @@ mlflow
 ### NLP ###
 nltk
 
+
+### STREAMLIT ###
+streamlit
+python-multipart
+openpyxl
+gcsfs
+
 #### API ###
 
 uvicorn

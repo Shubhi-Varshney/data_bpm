@@ -44,8 +44,12 @@ def transform_jobDuration(X: pd.DataFrame):
 
         # Getting the exact element of years and months
         if len(parts) == 4:
-            years = int(parts[0])
-            months = int(parts[2])
+            # Check if the format is 'Less than a year'
+            if 'Less' in parts[0]:
+                years = 1
+            else:
+                years = int(parts[0])
+                months = int(parts[2])
         elif len(parts) == 2:
             if parts[1] == 'yr':
                 years = int(parts[0])
@@ -127,6 +131,9 @@ def basic_cleaning(sentence):
     # 1. Removing whitespaces
     sentence = sentence.strip()
 
+    #5 remove non-alpha characters
+    sentence = re.sub(r"[^a-zA-Z]", '', sentence)
+
     # 2. Lowercasing
     sentence = sentence.lower()
 
@@ -140,8 +147,7 @@ def basic_cleaning(sentence):
     for punctuation in string.punctuation:
         sentence = sentence.replace(punctuation, '')
 
-    #5 remove non-alpha characters
-    sentence = sentence.replace(r'[^a-zA-Z\s]', '')
+
 
     return sentence
 

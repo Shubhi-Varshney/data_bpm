@@ -30,5 +30,5 @@ LOCAL_REGISTRY_PATH =  os.path.join(os.path.expanduser('~'), ".lewagon", "data_b
 ##################  PREPROCESSOR PARAMS  #####################
 COLUMN_NAMES_RAW = [ 'headline','description', 'jobTitle' ,'jobDescription','jobDuration', 'jobDateRange', 'jobTitle2', 'jobDuration2', 'schoolDateRange', 'skill1', 'skill2', 'skill3']
 COLUMN_NAMES_METADATA = ['headline','description', 'jobTitle','jobDescription','jobTitle2', 'skill1', 'skill2', 'skill3']
-SVD_COMPONENTS = 15
+SVD_COMPONENTS = 18
 TOP_SIMILAR_USERS = 10

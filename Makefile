@@ -17,9 +17,11 @@ clean:
 	@rm -fr data_bpm.egg-info
 
 # run_train -s will train the model and pickle (save) it
-run_train:
+run_train_cluster:
 	python -c 'from data_bpm.interface.main import train; train(save_model=True if "-s" in "$(MAKEFLAGS)" else False)'
  	#python -c 'from data_bpm.interface.main import train; train()'
+run_train_classification:
+	python -c 'from data_bpm.interface.main import train_model2; train_model2(save=True)'
 
 # run_pred:
 # 	python -c 'from taxifare.interface.main import pred; pred()'

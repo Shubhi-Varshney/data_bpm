@@ -47,20 +47,22 @@ def train_model_2(
     # $CODE_BEGIN
     print(Fore.BLUE + "\nTraining the model..." + Style.RESET_ALL)
 
-    model = SVC(probability=True)
+    # Classification model to predict positive probability
+    model = SVC(probability=True, class_weight='balanced')
 
-    grid = { 'kernel' : ['linear', 'rbf', 'sigmoid'],
-        'C' : [0.01, 0.1, 1, 10, 100],
-        'gamma' : stats.uniform()
-    }
+    grid = {
+            'C' : stats.uniform(0.1, 60),
+            'kernel': ['linear', 'rbf', 'sigmoid'],
+            'gamma' : stats.uniform(0.02, 0.06)
+            }
+    randsearch = RandomizedSearchCV(estimator=model, param_distributions=grid,
+                                    n_iter=3000, scoring='precision',
+                                    cv=3, n_jobs=-1, verbose=1)
 
-    randsearch = RandomizedSearchCV(estimator=model, param_distributions=grid, n_iter=500, scoring='accuracy', n_jobs=-1)
-
+    # Perform cross-validation with precision scoring
     randsearch.fit(X_processed, y_train)
 
     final_model = randsearch.best_estimator_
-
-    # $CODE_END
 
     print(f"✅ SVM Model trained with best params: {randsearch.best_params_} and best score: {randsearch.best_score_}")
 

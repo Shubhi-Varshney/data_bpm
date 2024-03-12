@@ -22,7 +22,7 @@ def clean_data(data_events_ppl, data_scraped):
     if len(data_scraped) == 0:
         print(Fore.RED + "\nScraped data is empty!" + Style.RESET_ALL)
         return (None,None)
-
+    # breakpoint()
     data_events_ppl["First Name"] = data_events_ppl["First Name"].apply(process_name)
     data_events_ppl["Surname"] = data_events_ppl["Surname"].apply(process_name)
     data_events_ppl["fullName"] = data_events_ppl["First Name"] + ' ' + data_events_ppl["Surname"]
@@ -114,7 +114,7 @@ def clean_data(data_events_ppl, data_scraped):
 
     # Dropping a particular row as for a invalid format for jobDuration "Less than 1 year"
     # To do a more sophisticate function to handle these type of data in cleaning
-    data_merged.drop(509, inplace=True)
+    # data_merged.drop(509, inplace=True)
 
     # create the data frame for the analytics-----------------------------------------
 
@@ -190,7 +190,6 @@ def get_data():
 
 
         print(f"✅ All 3 Data files loaded")
-
 
     elif params.MODEL_TARGET == 'local':
         print(Fore.BLUE + "\nLoad data from local CSV..." + Style.RESET_ALL)

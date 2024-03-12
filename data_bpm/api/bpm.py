@@ -4,6 +4,7 @@ from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 import json
 from data_bpm.ml_logic.registry import load_model, load_preproc_pipeline
+from data_bpm.ml_logic.data import get_data_from_gcs, save_data_to_gcs
 from data_bpm.interface.main import *
 from data_bpm.params import *
 app = FastAPI()
@@ -68,6 +69,44 @@ def predict(File: UploadFile=File(...)):
 
 @app.get("/")
 def root():
+    return {
+        "greeting": "works!"
+    }
+
+@app.get("/getCleanData")
+def getCleanData():
+    # 1. Load the latest data files from google cloud storage
+    # 2. Merge and clean the data
+    # 3. Save the cleaned data on google cloud storage again for dashboard
+    # 4. If everythin OK, return a OK message otherwise an appropriate error message
+
+    ## Doing 1st and 2nd steps
+    data_ml, data_analytics = get_data_from_gcs()
+
+    ## Doing 3rd and 4th steps
+    if (data_ml and data_analytics):
+        message = save_data_to_gcs(data_ml, data_analytics)
+        if message == 'OK' :
+            return {
+                "Files Saved" : "OK"
+            }
+        else :
+            return {
+                "error" : "Unable to save the cleaned data to google cloud"
+            }
+    else :
+        return {
+            "error" : "Unable to load latest data from google cloud"
+        }
+
+
+@app.get("/train")
+def train():
+    # 1. read the latest clean data from google cloud
+    # 2. preprocess it
+    # 3. train the model
+
+
     return {
         "greeting": "works!"
     }

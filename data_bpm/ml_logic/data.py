@@ -1,11 +1,14 @@
 import pandas as pd
 import os.path as Path
 from colorama import Fore, Style
-from google.cloud import bigquery
 from data_bpm import params
 import numpy as np
 import string as str
 import unicodedata
+import gcsfs
+
+from google.cloud import bigquery
+from google.cloud import storage
 
 def clean_data(data_events_ppl, data_scraped):
     '''
@@ -150,7 +153,7 @@ def get_data():
     data_scraped = pd.DataFrame()
     data_events_series = pd.DataFrame()
 
-    # Get Data from Goggle Cloud BigQuery
+    # Get Data from Goggle Cloud Storage
     if params.MODEL_TARGET == 'gcs':
         """
         Retrieve `query` data from BigQuery, or from `cache_path` if the file exists
@@ -276,3 +279,67 @@ def custom_user_matching(row_scraped, row_ids):
         if (row_scraped['firstName'] in row_ids['First Name']) and ( not pd.isna(row_scraped['firstName'])) :
             if (row_ids['Company'] in row_scraped['company'].lower()) and ( len(row_ids['Company']) != 0):
                 return True
+
+
+def get_data_from_gcs():
+    '''
+    This method will read the latest csv data from google cloud storage |
+    Data files will be uploaded manually from the stakeholder
+    '''
+    print(Fore.BLUE + f"\nLoad latest data files from GCS..." + Style.RESET_ALL)
+
+    breakpoint()
+    client = storage.Client()
+
+    bucket_name = params.BUCKET_NAME
+
+    #bucket = client.bucket(bucket_name)
+    file_path_events_ppl = params.RAW_FILE_EVENT
+    file_path_scrapped = params.RAW_FILE_ALL
+
+    try:
+        # Create a GCS filesystem instance
+        fs = gcsfs.GCSFileSystem()
+
+        # Open the file using GCSFileSystem and read it into a DataFrame
+        with fs.open(f'{bucket_name}/{file_path_events_ppl}', 'rb') as file1:
+            data_events_ppl = pd.read_csv(file1)
+
+        with fs.open(f'{bucket_name}/{file_path_scrapped}', 'rb') as file2:
+            data_scraped = pd.read_csv(file2)
+
+        print("✅ Latest files loaded from cloud storage")
+
+        return clean_data(data_events_ppl, data_scraped)
+    except:
+        print(f"\n❌ No files found in GCS bucket {bucket_name}")
+
+        return None
+
+def save_data_to_gcs(
+        data_ml: pd.DataFrame,
+        data_analytics: pd.DataFrame
+    ):
+
+    '''
+    Save the cleaned version of data in google cloud storage to nake it available to Dashboard
+    '''
+    client = storage.Client()
+    bucket_name = client.get_bucket(params.BUCKET_NAME)
+    file_name_ml = params.CLEANED_FILE_ML
+    file_name_analytics = params.CLEANED_FILE_ANALYTICS
+
+    fs = gcsfs.GCSFileSystem()
+
+    try:
+         # Write the DataFrame to a CSV file in the GCS bucket
+        with fs.open(f'{bucket_name}/{file_name_ml}', 'w') as file:
+            data_ml.to_csv(file, index=False)
+
+        with fs.open(f'{bucket_name}/{file_name_analytics}', 'w') as file:
+            data_analytics.to_csv(file, index=False)
+
+    except:
+        print(f"\n❌ No files saved in GCS bucket {bucket_name}")
+
+        return None

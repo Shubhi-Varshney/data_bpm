@@ -2,8 +2,6 @@ numpy
 pandas
 python-multipart
 scikit-learn
-google-cloud-bigquery
-google-cloud-storage
 mlflow
 
 ### NLP ###
@@ -14,3 +12,10 @@ nltk
 uvicorn
 fastapi
 colorama
+
+### google cloud
+fsspec==2024.2.0
+gcsfs
+openpyxl
+google-cloud-bigquery
+google-cloud-storage

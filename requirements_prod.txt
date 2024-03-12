@@ -1,13 +1,7 @@
-pytest
-pylint
-ipdb
-jupyterlab
-notebook
 numpy
 pandas
-
+python-multipart
 scikit-learn
-ipdb
 google-cloud-bigquery
 google-cloud-storage
 mlflow
@@ -15,16 +9,8 @@ mlflow
 ### NLP ###
 nltk
 
-
-### STREAMLIT ###
-streamlit
-python-multipart
-openpyxl
-gcsfs
-
 #### API ###
 
 uvicorn
 fastapi
 colorama
-pytz

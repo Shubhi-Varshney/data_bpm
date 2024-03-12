@@ -47,7 +47,7 @@ def train_model_2(
     # $CODE_BEGIN
     print(Fore.BLUE + "\nTraining the model..." + Style.RESET_ALL)
 
-    model = SVC()
+    model = SVC(probability=True)
 
     grid = { 'kernel' : ['linear', 'rbf', 'sigmoid'],
         'C' : [0.01, 0.1, 1, 10, 100],

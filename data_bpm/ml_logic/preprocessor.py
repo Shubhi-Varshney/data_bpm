@@ -40,9 +40,9 @@ class MetadataTransformer(TransformerMixin, BaseEstimator):
             self.svd = self.svd.fit(self.count_df)
             latent_df = self.svd.transform(self.count_df)
             return pd.DataFrame(latent_df)
-        else:
+        elif X.shape[0] != self.count_df.shape[0]:
             # called for prediction only
-            print("✅ MetadataTransformer is called for PREDICT")
+            print("✅ MetadataTransformer is called for PREDICT ------- Currently working only for 1 person!!!")
             count_vectorizer_pred = CountVectorizer(stop_words='english')
             count_matrix_pred = count_vectorizer_pred.fit_transform(X.metadata)
             count_matrix_pred_calc = pd.DataFrame(count_matrix_pred.toarray(), columns = count_vectorizer_pred.get_feature_names_out()).T
@@ -52,6 +52,10 @@ class MetadataTransformer(TransformerMixin, BaseEstimator):
                 if index in count_matrix_calculate.index:
                     count_matrix_calculate.loc[index, 0] = count_matrix_pred_calc.loc[index, 0]
             latent_df = self.svd.transform(count_matrix_calculate.reset_index(drop=True).T)
+            return pd.DataFrame(latent_df)
+        else:
+            print("✅ MetadataTransformer is called to transform the training data")
+            latent_df = self.svd.transform(self.count_df)
             return pd.DataFrame(latent_df)
     # count = CountVectorizer(stop_words='english')
     # count_matrix = count.fit_transform(df['metadata'])
@@ -97,7 +101,7 @@ def preprocess_features(X: pd.DataFrame, save_pipeline = True):
                 ("schoolPassed_pipe", schoolPassed_pipe, ["schoolDateRange"]),
                 ('metadata_pipe', metadata_pipe, metadata_columns)
             ],
-            remainder='drop',
+            remainder='drop'
         )
 
     final_preprocessor = Pipeline([
@@ -105,8 +109,7 @@ def preprocess_features(X: pd.DataFrame, save_pipeline = True):
                                 ('scaler', MinMaxScaler())
                                 ])
 
-    final_preprocessor = final_preprocessor.fit(X)
-    X_processed = final_preprocessor.transform(X)
+    X_processed = final_preprocessor.fit_transform(X)
     # print(X_processed[:5, :5])
 
     print("✅ X_processed, with shape", X_processed.shape)
@@ -117,6 +120,3 @@ def preprocess_features(X: pd.DataFrame, save_pipeline = True):
         save_preproc_pipeline(final_preprocessor)
 
     return X_processed
-
-    # After preprocessing, load the preprocessed data into bigquery
-    # load_data_to_bq()

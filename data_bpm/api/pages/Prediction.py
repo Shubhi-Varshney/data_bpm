@@ -27,8 +27,7 @@ def call_predict_api(payload):
 
 
 
-
-st.header("Make Prediction")
+st.markdown('<span style="text-align: center; font-size: 50px; color: #519FFF;">Predict if someone will attend a BPM event based on LinkedIn data:</span>', unsafe_allow_html=True)
 
 
 st.header("Upload CSV file")

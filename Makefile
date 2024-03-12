@@ -40,9 +40,20 @@ run_train_classification:
 # HOME := $(shell python -c "from os.path import expanduser; print(expanduser('~'))")
 
 LOCAL_REGISTRY_PATH =  ~/.lewagon/data_bpm
+
 reset_local_files:
 	rm -rf ${LOCAL_REGISTRY_PATH}
 	mkdir -p ${LOCAL_REGISTRY_PATH}
 	mkdir ${LOCAL_REGISTRY_PATH}/training_outputs
 	mkdir ${LOCAL_REGISTRY_PATH}/training_outputs/models
 	mkdir ${LOCAL_REGISTRY_PATH}/training_outputs/pipes
+
+
+make_docker_image:
+	docker build -t ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${DOCKER_REPO_NAME}/${DOCKER_IMAGE_NAME}:prod .
+
+make_push_docker_image:
+	docker push ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${DOCKER_REPO_NAME}/${DOCKER_IMAGE_NAME}:prod
+
+make_run_image:
+	gcloud run deploy --image ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${DOCKER_REPO_NAME}/${DOCKER_IMAGE_NAME}:prod --region ${GCP_REGION} --env-vars-file .env.yaml

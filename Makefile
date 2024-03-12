@@ -37,11 +37,10 @@ run_train_classification:
 # Data sources: targets for monthly data imports
 
 # Retrieve the user's home directory using Python
-HOME := $(shell python -c "from os.path import expanduser; print(expanduser('~'))")
-LOCAL_REGISTRY_PATH =  ${HOME}/.lewagon/data_bpm
+# HOME := $(shell python -c "from os.path import expanduser; print(expanduser('~'))")
+#LOCAL_REGISTRY_PATH =  ${HOME}/.lewagon/data_bpm
 reset_local_files:
-	rm -rf ${LOCAL_REGISTRY_PATH}
-	mkdir -p ${LOCAL_REGISTRY_PATH}
-	mkdir ${LOCAL_REGISTRY_PATH}/training_outputs
-	mkdir ${LOCAL_REGISTRY_PATH}/training_outputs/models
-	mkdir ${LOCAL_REGISTRY_PATH}/training_outputs/pipes
+	rm -rf data_bpm/training_outputs
+	mkdir -p data_bpm/training_outputs
+	mkdir data_bpm/training_outputs/models
+	mkdir data_bpm/training_outputs/pipes

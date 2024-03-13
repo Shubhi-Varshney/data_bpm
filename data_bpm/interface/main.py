@@ -87,53 +87,60 @@ def train_model2(save=False):
     - Save the model
     """
 
-    print(Fore.MAGENTA + "\n⭐️ Use case: train_model2" + Style.RESET_ALL)
+    try :
 
-    if params.DATA_TARGET == 'local':
+        print(Fore.MAGENTA + "\n⭐️ Use case: train_model2" + Style.RESET_ALL)
 
-        print(Fore.BLUE + "\n Reading the clean data from local folder: raw_data.." + Style.RESET_ALL)
-        data_for_ml = pd.read_csv(f"raw_data/{params.CLEANED_FILE_ML}", index_col=0)
+        if params.DATA_TARGET == 'local':
 
-    elif params.DATA_TARGET == 'gcs':
+            print(Fore.BLUE + "\n Reading the clean data from local folder: raw_data.." + Style.RESET_ALL)
+            data_for_ml = pd.read_csv(f"raw_data/{params.CLEANED_FILE_ML}", index_col=0)
 
-        print(Fore.BLUE + "\n Reading the clean data from gcs .." + Style.RESET_ALL)
-        bucket_name = params.BUCKET_NAME
-        gsfile_path_events_ppl = f'gs://{bucket_name}/{params.CLEANED_FILE_ML}'
-        data_for_ml = pd.read_csv(gsfile_path_events_ppl)
+        elif params.DATA_TARGET == 'gcs':
 
-
-    X_processed = preprocess_features(data_for_ml.drop(columns=['Attendance']), save_pipeline = True)
-    y_train = data_for_ml['Attendance']
+            print(Fore.BLUE + "\n Reading the clean data from gcs .." + Style.RESET_ALL)
+            bucket_name = params.BUCKET_NAME
+            gsfile_path_events_ppl = f'gs://{bucket_name}/{params.CLEANED_FILE_ML}'
+            data_for_ml = pd.read_csv(gsfile_path_events_ppl)
 
 
-    # print(Fore.BLUE + "\n Loading the pre-processing pipeline.." + Style.RESET_ALL)
-    # preproc_pipeline = load_preproc_pipeline()
+        X_processed = preprocess_features(data_for_ml.drop(columns=['Attendance']), save_pipeline = True)
+        y_train = data_for_ml['Attendance']
 
-    # if preproc_pipeline == None:
-    #     print("Failed to load preproc pipeline")
-    #     print(Fore.BLUE + "\n Preprocessing the raw data.." + Style.RESET_ALL)
-    #     X_processed, y_train = preprocess()
-    # else:
-    #     # ----- Uncomment if want to train the model from already merged data ----- #
-    #     print(Fore.BLUE + "\n Reading the saved merged raw data.." + Style.RESET_ALL)
-    #     data_for_ml = pd.read_csv("raw_data/data_for_ml.csv", index_col=0)
-    #     # X_processed = preprocess_features(data_for_ml.drop('Attendance', axis=1))
-    #     # y_train = data_for_ml['Attendance']
-    #     #
-    #     y_train = data_for_ml['Attendance']
-    #     X_processed = preproc_pipeline.transform(data_for_ml.drop(columns=['Attendance']))
 
-    # # Train model using `model.py`
-    # model = load_model()
-    # if model is None:
+        # print(Fore.BLUE + "\n Loading the pre-processing pipeline.." + Style.RESET_ALL)
+        # preproc_pipeline = load_preproc_pipeline()
 
-    # To train a classification model
-    model = train_model_2(X_processed, y_train)
+        # if preproc_pipeline == None:
+        #     print("Failed to load preproc pipeline")
+        #     print(Fore.BLUE + "\n Preprocessing the raw data.." + Style.RESET_ALL)
+        #     X_processed, y_train = preprocess()
+        # else:
+        #     # ----- Uncomment if want to train the model from already merged data ----- #
+        #     print(Fore.BLUE + "\n Reading the saved merged raw data.." + Style.RESET_ALL)
+        #     data_for_ml = pd.read_csv("raw_data/data_for_ml.csv", index_col=0)
+        #     # X_processed = preprocess_features(data_for_ml.drop('Attendance', axis=1))
+        #     # y_train = data_for_ml['Attendance']
+        #     #
+        #     y_train = data_for_ml['Attendance']
+        #     X_processed = preproc_pipeline.transform(data_for_ml.drop(columns=['Attendance']))
 
-    # Save model
-    if save == True:
-        save_model(model)
+        # # Train model using `model.py`
+        # model = load_model()
+        # if model is None:
 
+        # To train a classification model
+        model_dic = train_model_2(X_processed, y_train)
+        model = model_dic['model']
+
+        # Save model
+        if save == True:
+            save_model(model)
+
+    except Exception as e:
+        return False, e
+
+    return (True, model_dic)
 
 def evaluate():
     pass

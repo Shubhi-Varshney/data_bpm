@@ -4,10 +4,13 @@ import os.path as Path
 
 from colorama import Fore, Style
 
-from data_bpm.ml_logic.data import get_data, clean_data
+from data_bpm.ml_logic.data import get_data, clean_data, save_data_to_gcs
 from data_bpm.ml_logic.preprocessor import preprocess_features
 from data_bpm.ml_logic.registry import load_model, save_model, save_results, load_preproc_pipeline
 from data_bpm.ml_logic.model import train_model, train_model_2
+from data_bpm import params
+
+from google.cloud import storage
 
 def preprocess():
     data_for_ml, data_for_analytics = get_data()
@@ -22,13 +25,17 @@ def preprocess():
     # data_for_analytics = pd.read_csv('raw_data/data_for_analytics.csv',index_col=0)
 
     # ----- Toggle if you want to save a cleaned intermediate data
-    print(Fore.BLUE + "\n Saving intermediate data to the raw_data.." + Style.RESET_ALL)
-    data_for_ml.to_csv('raw_data/data_for_ml.csv')
-    data_for_analytics.to_csv('raw_data/data_for_analytics.csv')
+    if params.DATA_TARGET == 'local':
+        print(Fore.BLUE + "\n Saving intermediate clean data to the raw_data folder.." + Style.RESET_ALL)
+        data_for_ml.to_csv(f'raw_data/{params.CLEANED_FILE_ML}')
+        data_for_analytics.to_csv(f'raw_data/{params.CLEANED_FILE_ANALYTICS}')
+    elif params.DATA_TARGET == 'gcs':
+        print(Fore.BLUE + "\n Saving intermediate clean data to the gcs.." + Style.RESET_ALL)
+        save_data_to_gcs(data_for_ml, data_for_analytics)
 
-    X_processed = preprocess_features(data_for_ml.drop(columns=['Attendance']), save_pipeline = True)
-    y_train = data_for_ml['Attendance']
-    return (X_processed, y_train)
+    # X_processed = preprocess_features(data_for_ml.drop(columns=['Attendance']), save_pipeline = True)
+    # y_train = data_for_ml['Attendance']
+    # return (X_processed, y_train)
 
 def train(save=False):
     """
@@ -81,8 +88,20 @@ def train_model2(save=False):
     """
 
     print(Fore.MAGENTA + "\n⭐️ Use case: train_model2" + Style.RESET_ALL)
-    print(Fore.BLUE + "\n Reading the saved merged raw data.." + Style.RESET_ALL)
-    data_for_ml = pd.read_csv("raw_data/data_for_ml.csv", index_col=0)
+
+    if params.DATA_TARGET == 'local':
+
+        print(Fore.BLUE + "\n Reading the clean data from local folder: raw_data.." + Style.RESET_ALL)
+        data_for_ml = pd.read_csv(f"raw_data/{params.CLEANED_FILE_ML}", index_col=0)
+
+    elif params.DATA_TARGET == 'gcs':
+
+        print(Fore.BLUE + "\n Reading the clean data from gcs .." + Style.RESET_ALL)
+        bucket_name = params.BUCKET_NAME
+        gsfile_path_events_ppl = f'gs://{bucket_name}/{params.CLEANED_FILE_ML}'
+        data_for_ml = pd.read_csv(gsfile_path_events_ppl)
+
+
     X_processed = preprocess_features(data_for_ml.drop(columns=['Attendance']), save_pipeline = True)
     y_train = data_for_ml['Attendance']
 
@@ -149,8 +168,8 @@ def similar_users():
     '''
     Find top n similar users of a new/existing user
     '''
-    raw_ml_data = pd.read_csv("raw_data/data_for_ml.csv")
-    print(Fore.BLUE + "\n Preprocessing the raw data.." + Style.RESET_ALL)
+    raw_ml_data = pd.read_csv(f"raw_data/{params.CLEANED_FILE_ML}")
+    print(Fore.BLUE + "\n Preprocessing the clean data.." + Style.RESET_ALL)
 
     # preprocess_pipeline = load_preprocessor()
 

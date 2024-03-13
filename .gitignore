@@ -1,5 +1,6 @@
 nltk_data/*
 raw_data/*
+training_outputs/*
 .env
 .envrc
 

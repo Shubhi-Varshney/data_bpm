@@ -1,7 +1,8 @@
 import os
 import numpy as np
 
-MODEL_TARGET = 'local' # os.environ.get("MODEL_TARGET")
+MODEL_TARGET = os.environ.get("MODEL_TARGET")
+DATA_TARGET = os.environ.get("DATA_TARGET")
 
 ##################  GCP VARIABLES  ##################
 GCP_PROJECT = os.environ.get("GCP_PROJECT")
@@ -11,7 +12,7 @@ BQ_DATASET = os.environ.get("BQ_DATASET")
 BQ_REGION = os.environ.get("BQ_REGION")
 BUCKET_NAME = os.environ.get("BUCKET_NAME")
 RAW_FILE_EVENT = os.environ.get("RAW_FILE_EVENT")
-RAW_FILE_ALL = os.environ.get("RAW_FILE_ALL")
+RAW_FILE_SCRAPPED = os.environ.get("RAW_FILE_SCRAPPED")
 CLEANED_FILE_ML = os.environ.get("CLEANED_FILE_ML")
 CLEANED_FILE_ANALYTICS = os.environ.get("CLEANED_FILE_ANALYTICS")
 INSTANCE = os.environ.get("INSTANCE")
@@ -33,13 +34,9 @@ MLFLOW_MODEL_NAME='data_bpm_experiment_sydd'
 
 # LOCAL_REGISTRY_PATH =  '~/.lewagon/data_bpm'
 # LOCAL_REGISTRY_PATH =  '/home/shubhi/.lewagon/data_bpm'
-=======
 # LOCAL_DATA_PATH = os.path.join(os.path.curdir(), "raw_data")
 
 # IS_DOCKER = os.environ.get('DOCKER_ENV', False)
-PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-LOCAL_REGISTRY_PATH = os.path.join(PROJECT_ROOT, "training_outputs")
-
 
 ##################  CONSTANTS  #####################
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))

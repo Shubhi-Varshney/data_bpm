@@ -73,7 +73,6 @@ def preprocess_features(X: pd.DataFrame, save_pipeline = True):
     # Preprocess features
     # Feature Selection from the merged dataset
 
-
     selected_features = COLUMN_NAMES_RAW
     metadata_columns = COLUMN_NAMES_METADATA
     X = X[selected_features]
@@ -94,6 +93,7 @@ def preprocess_features(X: pd.DataFrame, save_pipeline = True):
             ('transform_metadata', FunctionTransformer(transform_metadata)),
             ('custom_transformer', MetadataTransformer(n_components = SVD_COMPONENTS))
         ])
+
     preprocessor_pipe = ColumnTransformer(
             [
                 ("employment_pipe", employment_pipe, ["jobDateRange"]),

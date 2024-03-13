@@ -33,9 +33,9 @@ def preprocess():
         print(Fore.BLUE + "\n Saving intermediate clean data to the gcs.." + Style.RESET_ALL)
         save_data_to_gcs(data_for_ml, data_for_analytics)
 
-    X_processed = preprocess_features(data_for_ml.drop(columns=['Attendance']), save_pipeline = True)
-    y_train = data_for_ml['Attendance']
-    return (X_processed, y_train)
+    # X_processed = preprocess_features(data_for_ml.drop(columns=['Attendance']), save_pipeline = True)
+    # y_train = data_for_ml['Attendance']
+    # return (X_processed, y_train)
 
 def train(save=False):
     """

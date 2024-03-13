@@ -26,6 +26,7 @@ MLFLOW_EXPERIMENT='data_bpm_experiment_sydd'
 MLFLOW_MODEL_NAME='data_bpm_experiment_sydd'
 
 ##################  CONSTANTS  #####################
+
 # LOCAL_DATA_PATH = os.path.join(os.path.curdir(), "raw_data")
 # LOCAL_REGISTRY_PATH = os.path.join(os.path.dirname(__file__), ".lewagon", "data_bpm", "training_outputs")
 # LOCAL_REGISTRY_PATH = os.path.join(os.path.expanduser('~'), ".lewagon", "data_bpm", "training_outputs")
@@ -33,6 +34,9 @@ MLFLOW_MODEL_NAME='data_bpm_experiment_sydd'
 
 # LOCAL_REGISTRY_PATH =  '~/.lewagon/data_bpm'
 # LOCAL_REGISTRY_PATH =  '/home/shubhi/.lewagon/data_bpm'
+# LOCAL_DATA_PATH = os.path.join(os.path.curdir(), "raw_data")
+
+# IS_DOCKER = os.environ.get('DOCKER_ENV', False)
 
 ##################  CONSTANTS  #####################
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))

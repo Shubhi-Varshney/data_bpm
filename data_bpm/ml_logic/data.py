@@ -5,7 +5,7 @@ from data_bpm import params
 import numpy as np
 import string as str
 import unicodedata
-import gcsfs
+from io import BytesIO
 
 from google.cloud import bigquery
 from google.cloud import storage
@@ -154,55 +154,17 @@ def get_data():
     data_events_series = pd.DataFrame()
 
     # Get Data from Goggle Cloud Storage
-    if params.MODEL_TARGET == 'gcs':
-        """
-        Retrieve `query` data from BigQuery, or from `cache_path` if the file exists
-        Store at `cache_path` if retrieved from BigQuery for future use
-        """
-        print(Fore.BLUE + "\nLoading raw_all data from BigQuery server..." + Style.RESET_ALL)
-        query_1 = """SELECT {",".join(COLUMN_NAMES_RAW)}
-        FROM {GCP_PROJECT}.{BQ_DATASET}.raw_all
-        """
-        client = bigquery.Client(project=params.GCP_PROJECT)
-        query_1_job = client.query(query_1)
-        result = query_1_job.result()
-        data_events_ppl = result.to_dataframe()
+    if params.DATA_TARGET == 'gcs':
+        data_events_ppl, data_scraped = get_data_from_gcs()
+        print(f"✅ All 2 Data files loaded from GCS")
 
-        print(f"raw_all Data loaded, with shape {data_events_ppl.shape}")
-        ##############
-
-        print(Fore.BLUE + "\nLoading raw_scrapped data from BigQuery server..." + Style.RESET_ALL)
-        query_2 = """SELECT {",".join(COLUMN_NAMES_RAW)}
-        FROM {GCP_PROJECT}.{BQ_DATASET}.raw_scrapped
-        """
-        query_2_job = client.query(query_2)
-        result_2 = query_2_job.result()
-        data_scraped = result_2.to_dataframe()
-
-        print(f"raw_scrapped Data loaded, with shape {data_scraped.shape}")
-        ##############
-
-        print(Fore.BLUE + "\nLoading raw_events data from BigQuery server..." + Style.RESET_ALL)
-        query_3 = """SELECT {",".join(COLUMN_NAMES_RAW)}
-        FROM {GCP_PROJECT}.{BQ_DATASET}.raw_events
-        """
-        query_3_job = client.query(query_3)
-        result_3 = query_3_job.result()
-        data_events_series = result_3.to_dataframe()
-        print(f"raw_scrapped Data loaded, with shape {data_events_series.shape}")
-
-
-        print(f"✅ All 3 Data files loaded")
-
-    elif params.MODEL_TARGET == 'local':
+    elif params.DATA_TARGET == 'local':
         print(Fore.BLUE + "\nLoad data from local CSV..." + Style.RESET_ALL)
 
-        # Get Local Data'
-        # data_events_ppl = pd.read_csv(Path.join("raw_data", "240304 BPM Events list people  - ALL __.csv"))
-        # data_scraped = pd.read_csv(Path.join("raw_data", "result.csv"))
-        # # data_events_series = pd.read_csv(Path.join("..","raw_data", "BPM Events list people.csv"))
-        data_events_ppl = pd.read_csv(Path.join("raw_data", "raw_all.csv"))
-        data_scraped = pd.read_csv(Path.join("raw_data", "raw_scrapped.csv"))
+        # Get Local Data
+        data_events_ppl = pd.read_csv(Path.join("raw_data", params.RAW_FILE_EVENT))
+        data_scraped = pd.read_csv(Path.join("raw_data", params.RAW_FILE_SCRAPPED))
+
     else:
         print(Fore.RED + "\nMODEL_TARGET not set, exiting" + Style.RESET_ALL)
         return(None,None)
@@ -288,33 +250,21 @@ def get_data_from_gcs():
     '''
     print(Fore.BLUE + f"\nLoad latest data files from GCS..." + Style.RESET_ALL)
 
-    breakpoint()
-    client = storage.Client()
-
     bucket_name = params.BUCKET_NAME
-
-    #bucket = client.bucket(bucket_name)
-    file_path_events_ppl = params.RAW_FILE_EVENT
-    file_path_scrapped = params.RAW_FILE_ALL
+    gsfile_path_events_ppl = f'gs://{bucket_name}/{params.RAW_FILE_EVENT}'
+    gsfile_path_scrapped = f'gs://{bucket_name}/{params.RAW_FILE_SCRAPPED}'
 
     try:
-        # Create a GCS filesystem instance
-        fs = gcsfs.GCSFileSystem()
-
-        # Open the file using GCSFileSystem and read it into a DataFrame
-        with fs.open(f'{bucket_name}/{file_path_events_ppl}', 'rb') as file1:
-            data_events_ppl = pd.read_csv(file1)
-
-        with fs.open(f'{bucket_name}/{file_path_scrapped}', 'rb') as file2:
-            data_scraped = pd.read_csv(file2)
+        data_events_ppl = pd.read_csv(gsfile_path_events_ppl)
+        data_scraped = pd.read_csv(gsfile_path_scrapped)
 
         print("✅ Latest files loaded from cloud storage")
 
-        return clean_data(data_events_ppl, data_scraped)
-    except:
+        return (True, clean_data(data_events_ppl, data_scraped))
+    except FileNotFoundError as e:
         print(f"\n❌ No files found in GCS bucket {bucket_name}")
-
-        return None
+        # print(f"File {gsfile_path_events_ppl} not found in bucket {bucket_name}")
+        return (False, e)
 
 def save_data_to_gcs(
         data_ml: pd.DataFrame,
@@ -325,21 +275,33 @@ def save_data_to_gcs(
     Save the cleaned version of data in google cloud storage to nake it available to Dashboard
     '''
     client = storage.Client()
-    bucket_name = client.get_bucket(params.BUCKET_NAME)
-    file_name_ml = params.CLEANED_FILE_ML
-    file_name_analytics = params.CLEANED_FILE_ANALYTICS
-
-    fs = gcsfs.GCSFileSystem()
+    bucket = client.bucket(params.BUCKET_NAME)
 
     try:
-         # Write the DataFrame to a CSV file in the GCS bucket
-        with fs.open(f'{bucket_name}/{file_name_ml}', 'w') as file:
-            data_ml.to_csv(file, index=False)
+        # Convert DataFrame to CSV format in memory
+        csv_buffer_ml = BytesIO()
+        data_ml.to_csv(csv_buffer_ml, index=False)
 
-        with fs.open(f'{bucket_name}/{file_name_analytics}', 'w') as file:
-            data_analytics.to_csv(file, index=False)
+        csv_buffer_analysis = BytesIO()
+        data_analytics.to_csv(csv_buffer_analysis, index=False)
 
-    except:
-        print(f"\n❌ No files saved in GCS bucket {bucket_name}")
+        # Specify the bucket name and CSV file path in GCS | Used in printing only
+        gcsfile_name_ml = f'gs://{params.BUCKET_NAME}/{params.CLEANED_FILE_ML}'
+        gcsfile_name_analytics = f'gs://{params.BUCKET_NAME}/{params.CLEANED_FILE_ANALYTICS}'
 
-        return None
+        # Create a Blob object and upload the CSV data
+        blob_ml = bucket.blob(params.CLEANED_FILE_ML)
+        blob_ml.upload_from_string(csv_buffer_ml.getvalue(), content_type='text/csv')
+
+        blob_analysis = bucket.blob(params.CLEANED_FILE_ANALYTICS)
+        blob_analysis.upload_from_string(csv_buffer_analysis.getvalue(), content_type='text/csv')
+
+        print(f"DataFrame successfully written to '{gcsfile_name_ml}'")
+        print(f"DataFrame successfully written to '{gcsfile_name_analytics}'")
+
+        return True, "OK"
+
+    except Exception as e:
+        print(f"\n❌ No files saved in GCS bucket {bucket}")
+
+        return False, e

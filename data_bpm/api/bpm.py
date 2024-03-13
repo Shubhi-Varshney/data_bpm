@@ -81,32 +81,34 @@ def getCleanData():
     # 4. If everythin OK, return a OK message otherwise an appropriate error message
 
     ## Doing 1st and 2nd steps
-    data_ml, data_analytics = get_data_from_gcs()
+    success, result = get_data_from_gcs()
 
-    ## Doing 3rd and 4th steps
-    if (data_ml and data_analytics):
-        message = save_data_to_gcs(data_ml, data_analytics)
-        if message == 'OK' :
+    if success:
+        data_ml, data_analytics = result[0], result[1]
+
+        ## Doing 3rd and 4th steps
+        save_flag, message = save_data_to_gcs(data_ml, data_analytics)
+        if save_flag :
             return {
-                "Files Saved" : "OK"
+                "Success" : "Cleaned Files saved in GCS, {message}"
             }
         else :
             return {
-                "error" : "Unable to save the cleaned data to google cloud"
+                "Error" : f"Unable to save the cleaned data in GCS, {message}"
             }
     else :
         return {
-            "error" : "Unable to load latest data from google cloud"
+            "Error" : f"Unable to load file from GCS, {result}"
         }
 
 
-@app.get("/train")
-def train():
-    # 1. read the latest clean data from google cloud
-    # 2. preprocess it
-    # 3. train the model
+# @app.get("/train")
+# def train():
+#     # 1. read the latest clean data from google cloud
+#     # 2. preprocess it
+#     # 3. train the model
 
 
-    return {
-        "greeting": "works!"
-    }
+#     return {
+#         "greeting": "works!"
+#     }

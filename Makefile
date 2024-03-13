@@ -20,21 +20,12 @@ clean:
 run_train_cluster:
 	python -c 'from data_bpm.interface.main import train; train(save_model=True if "-s" in "$(MAKEFLAGS)" else False)'
  	#python -c 'from data_bpm.interface.main import train; train()'
+
 run_train_classification:
 	python -c 'from data_bpm.interface.main import train_model2; train_model2(save=True)'
 
-# run_pred:
-# 	python -c 'from taxifare.interface.main import pred; pred()'
-
-
-# run_all: run_preprocess run_train run_pred run_evaluate
-
-# run_workflow:
-# 	PREFECT__LOGGING__LEVEL=${PREFECT_LOG_LEVEL} python -m taxifare.interface.workflow
 
 ################### LOCAL REGISTRY ################
-
-# Data sources: targets for monthly data imports
 
 # Retrieve the user's home directory using Python
 # HOME := $(shell python -c "from os.path import expanduser; print(expanduser('~'))")
@@ -49,11 +40,14 @@ reset_local_files:
 	mkdir ${LOCAL_REGISTRY_PATH}/training_outputs/pipes
 
 
-make_docker_image:
+run_local_docker_image:
+	docker run -e PORT=8000 -p 8080:8000 ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${DOCKER_REPO_NAME}/${DOCKER_IMAGE_NAME}:prod
+
+build_docker_image:
 	docker build -t ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${DOCKER_REPO_NAME}/${DOCKER_IMAGE_NAME}:prod .
 
-make_push_docker_image:
+push_docker_image:
 	docker push ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${DOCKER_REPO_NAME}/${DOCKER_IMAGE_NAME}:prod
 
-make_run_image:
+run_gcs_docker_image:
 	gcloud run deploy --image ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${DOCKER_REPO_NAME}/${DOCKER_IMAGE_NAME}:prod --region ${GCP_REGION} --env-vars-file .env.yaml

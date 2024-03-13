@@ -155,8 +155,22 @@ def get_data():
 
     # Get Data from Goggle Cloud Storage
     if params.DATA_TARGET == 'gcs':
-        data_events_ppl, data_scraped = get_data_from_gcs()
-        print(f"✅ All 2 Data files loaded from GCS")
+        # data_tuple = get_data_from_gcs()[1]
+        # breakpoint()
+        # data_events_ppl, data_scraped = data_tuple[0], data_tuple[1]
+        print(Fore.BLUE + f"\nLoad latest data files from GCS..." + Style.RESET_ALL)
+
+        bucket_name = params.BUCKET_NAME
+        gsfile_path_events_ppl = f'gs://{bucket_name}/{params.RAW_FILE_EVENT}'
+        gsfile_path_scrapped = f'gs://{bucket_name}/{params.RAW_FILE_SCRAPPED}'
+
+        try:
+            data_events_ppl = pd.read_csv(gsfile_path_events_ppl)
+            data_scraped = pd.read_csv(gsfile_path_scrapped)
+
+            print("✅ Latest 2 files loaded from GCS")
+        except Exception as e:
+            print(f"Error in reading files from GCS, {e}")
 
     elif params.DATA_TARGET == 'local':
         print(Fore.BLUE + "\nLoad data from local CSV..." + Style.RESET_ALL)

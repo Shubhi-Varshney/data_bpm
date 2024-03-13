@@ -13,7 +13,6 @@ RUN pip install .
 COPY nltk_data /usr/share/nltk_data
 
 COPY Makefile Makefile
-RUN make run_preprocess
 RUN make run_train_classification
 
 CMD uvicorn data_bpm.api.bpm:app --host 0.0.0.0 --port $PORT

@@ -41,16 +41,16 @@ run_train_classification:
 
 
 run_local_docker_image:
-	docker run -e PORT=8000 -p 8080:8000 ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${DOCKER_REPO_NAME}/${DOCKER_IMAGE_NAME}:prod
+	docker run -e PORT=8000 -p 8080:8000 --env-file .env ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${DOCKER_REPO_NAME}/${DOCKER_IMAGE_NAME}:dev_13
 
 build_docker_image:
-	docker build -t ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${DOCKER_REPO_NAME}/${DOCKER_IMAGE_NAME}:prod .
+	docker build -t ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${DOCKER_REPO_NAME}/${DOCKER_IMAGE_NAME}:dev_13 .
 
 push_docker_image:
-	docker push ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${DOCKER_REPO_NAME}/${DOCKER_IMAGE_NAME}:prod
+	docker push ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${DOCKER_REPO_NAME}/${DOCKER_IMAGE_NAME}:dev_13
 
 run_gcs_docker_image:
-	gcloud run deploy --image ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${DOCKER_REPO_NAME}/${DOCKER_IMAGE_NAME}:prod --region ${GCP_REGION} --env-vars-file .env.yaml
+	gcloud run deploy --image ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${DOCKER_REPO_NAME}/${DOCKER_IMAGE_NAME}:dev_13 --region ${GCP_REGION} --env-vars-file .env.yaml
 
 #LOCAL_REGISTRY_PATH =  ${HOME}/.lewagon/data_bpm
 reset_local_files:

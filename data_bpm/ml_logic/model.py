@@ -56,7 +56,7 @@ def train_model_2(
             'gamma' : stats.uniform(0.02, 0.06)
             }
     randsearch = RandomizedSearchCV(estimator=model, param_distributions=grid,
-                                    n_iter=10, scoring='precision',
+                                    n_iter=3000, scoring='precision',
                                     cv=3, n_jobs=-1, verbose=1)
 
     # Perform cross-validation with precision scoring
@@ -71,10 +71,10 @@ def train_model_2(
         }
 
 
-def similar_users(X_train_users_proc, X_new_user_proc):
+def get_similar_users(X_train_users_proc, X_new_user_proc):
 
     # return the indices of top_n similar users to the new user (used in prediction website)
-    # X_train_users_proc = preprocessed final features of the trianing data
+    # X_train_users_proc = preprocessed final features of the training data
     # X_new_user_proc = preprocessed final features of the new user
 
     # Compute cosine similarity between the new user and each user in the training dataset

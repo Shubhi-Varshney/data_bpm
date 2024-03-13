@@ -6,7 +6,8 @@ import json
 from data_bpm.ml_logic.registry import load_model, load_preproc_pipeline
 from data_bpm.ml_logic.data import get_clean_data_from_gcs, save_data_to_gcs, get_raw_data_from_gcs
 from data_bpm.interface.main import train_model2
-from data_bpm.params import *
+from data_bpm.ml_logic.model import get_similar_users
+from data_bpm import params
 app = FastAPI()
 
 app.add_middleware(
@@ -120,3 +121,44 @@ def train_model():
         return {
             "Error" : f"Unable to train model, {message}"
         }
+
+
+@app.post("/get_similar_users")
+def predict(File: UploadFile=File(...)):
+    content = File.file.read()
+    decode = content.decode('utf-8')
+    df_json = json.loads(decode)
+    X_pred = pd.DataFrame(df_json)
+
+    print("Received the prediction data")
+    print(X_pred)
+    X_processed = app.state.preproc_pipe.transform(X_pred)
+    print("Transformed the prediction data")
+    print(X_processed)
+    # Make prediction
+    try:
+        if params.DATA_TARGET == 'local':
+            print(" Reading the clean data from local folder: raw_data..")
+            data_for_ml = pd.read_csv(f"raw_data/{params.CLEANED_FILE_ML}", index_col=0)
+
+        elif params.DATA_TARGET == 'gcs':
+
+            print("Reading the clean data from gcs ..")
+            bucket_name = params.BUCKET_NAME
+            gsfile_path_events_ppl = f'gs://{bucket_name}/{params.CLEANED_FILE_ML}'
+            data_for_ml = pd.read_csv(gsfile_path_events_ppl)
+
+        # Processed the training data
+        X_processed = app.state.preproc_pipe.transform(data_for_ml)
+
+        # Find the indices of similar user based on cosine_similarity
+        user_id_indices = get_similar_users(X_processed, X_processed)
+
+        # Get the user information and send it back as a json
+        users_info = data_for_ml.iloc[user_id_indices][['fullName', 'company', 'jobTitle']]
+        user_dict = users_info.to_dict(orient='index')
+
+        return user_dict
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

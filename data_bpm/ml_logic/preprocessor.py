@@ -38,8 +38,8 @@ class MetadataTransformer(TransformerMixin, BaseEstimator):
             count_matrix = self.count_vectorizer.transform(X.metadata)
             self.count_df = pd.DataFrame(count_matrix.toarray(), index=X.index.tolist())
             self.svd = self.svd.fit(self.count_df)
-            latent_df = self.svd.transform(self.count_df)
-            return pd.DataFrame(latent_df)
+            self.latent_df = pd.DataFrame(self.svd.transform(self.count_df))
+            return self.latent_df
         elif X.shape[0] != self.count_df.shape[0]:
             # called for prediction only
             print("✅ MetadataTransformer is called for PREDICT ------- Currently working only for 1 person!!!")
@@ -55,8 +55,7 @@ class MetadataTransformer(TransformerMixin, BaseEstimator):
             return pd.DataFrame(latent_df)
         else:
             print("✅ MetadataTransformer is called to transform the training data")
-            latent_df = self.svd.transform(self.count_df)
-            return pd.DataFrame(latent_df)
+            return self.latent_df
     # count = CountVectorizer(stop_words='english')
     # count_matrix = count.fit_transform(df['metadata'])
     # count_df = pd.DataFrame(count_matrix.toarray(), index=df.index.tolist())

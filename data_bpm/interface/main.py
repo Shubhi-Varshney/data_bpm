@@ -9,8 +9,7 @@ from data_bpm.ml_logic.preprocessor import preprocess_features
 from data_bpm.ml_logic.registry import load_model, save_model, save_results, load_preproc_pipeline
 from data_bpm.ml_logic.model import train_model, train_model_2
 from data_bpm import params
-
-from google.cloud import storage
+from data_bpm.ml_logic.model import get_similar_users
 
 def preprocess():
     data_for_ml, data_for_analytics = get_data()
@@ -107,7 +106,6 @@ def train_model2(save=False):
         X_processed = preprocess_features(data_for_ml.drop(columns=['Attendance']), save_pipeline = True)
         y_train = data_for_ml['Attendance']
 
-
         # print(Fore.BLUE + "\n Loading the pre-processing pipeline.." + Style.RESET_ALL)
         # preproc_pipeline = load_preproc_pipeline()
 
@@ -153,10 +151,11 @@ def pred():
     X_pred = pd.read_csv("raw_data/predict.csv")
     preproc_pipeline = load_preproc_pipeline()
 
-    if preproc_pipeline == None:
-        print(Fore.BLUE + "\n Failed to load preproc pipeline \n Preprocessing the raw data.." + Style.RESET_ALL)
-        X_processed, y_train = preprocess()
-        preproc_pipeline = load_preproc_pipeline()
+    # Commented | As we commented preprocess_features in preprocess method
+    # if preproc_pipeline == None:
+    #     print(Fore.BLUE + "\n Failed to load preproc pipeline \n Preprocessing the raw data.." + Style.RESET_ALL)
+    #     X_processed, y_train = preprocess()
+    #     preproc_pipeline = load_preproc_pipeline()
 
     X_pred_process = preproc_pipeline.transform(X_pred)
 
@@ -173,28 +172,46 @@ def pred():
 
 def similar_users():
     '''
-    Find top n similar users of a new/existing user
-    '''
-    raw_ml_data = pd.read_csv(f"raw_data/{params.CLEANED_FILE_ML}")
-    print(Fore.BLUE + "\n Preprocessing the clean data.." + Style.RESET_ALL)
+    Find top n similar users of a new/existing user   '''
 
-    # preprocess_pipeline = load_preprocessor()
+    if params.DATA_TARGET == 'local':
+
+        print(Fore.BLUE + "\n Reading the clean data from local folder: raw_data.." + Style.RESET_ALL)
+        data_for_ml = pd.read_csv(f"raw_data/{params.CLEANED_FILE_ML}", index_col=0)
+
+    elif params.DATA_TARGET == 'gcs':
+
+        print(Fore.BLUE + "\n Reading the clean data from gcs .." + Style.RESET_ALL)
+        bucket_name = params.BUCKET_NAME
+        gsfile_path_events_ppl = f'gs://{bucket_name}/{params.CLEANED_FILE_ML}'
+        data_for_ml = pd.read_csv(gsfile_path_events_ppl)
 
     print(Fore.BLUE + "\n Reading the predict.csv.." + Style.RESET_ALL)
     X_pred = pd.read_csv("raw_data/predict.csv")
 
-    # X_processed = preprocess_features(raw_ml_data)
-    # X_processed_train = preprocess_pipeline.transform(raw_ml_data)
-    # X_processed_pred = preprocess_pipeline.transform(X_pred)
+    preproc_pipeline = load_preproc_pipeline()
 
-def test_method():
-    pass
+    # Commented | As we commented preprocess_features in preprocess method
+    # if preproc_pipeline == None:
+    #     print(Fore.BLUE + "\n Failed to load preproc pipeline \n Preprocessing the raw data.." + Style.RESET_ALL)
+    #     X_processed, y_train = preprocess()
+    #     preproc_pipeline = load_preproc_pipeline()
+
+    X_train_process = preproc_pipeline.fit_transform(data_for_ml)
+    X_pred_process = preproc_pipeline.transform(X_pred)
+
+    user_id_indices = get_similar_users(X_train_process, X_pred_process)
+    #print(data_for_ml.iloc[user_id_indices][['fullName', 'company', 'jobTitle']])
+
+    users_info = data_for_ml.iloc[user_id_indices][['fullName', 'company', 'jobTitle']]
+    user_dict = users_info.to_dict(orient='index')
+
+    print(user_dict)
 
 if __name__ == '__main__':
-    #preprocess()
+    # preprocess()
     # train()
-    train_model2(save=True)
+    # train_model2(save=True)
     # evaluate()
-    pred()
-    #test_method()
-    # similar_users()
+    # pred()
+    similar_users()

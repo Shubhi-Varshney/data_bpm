@@ -156,6 +156,8 @@ def predict(File: UploadFile=File(...)):
 
         # Get the user information and send it back as a json
         users_info = data_for_ml.iloc[user_id_indices][['fullName', 'company', 'jobTitle']]
+        users_info.index = users_info.index.astype(int)
+
         user_dict = users_info.to_dict(orient='index')
 
         return user_dict

@@ -56,17 +56,19 @@ def train_model_2(
             'gamma' : stats.uniform(0.02, 0.06)
             }
     randsearch = RandomizedSearchCV(estimator=model, param_distributions=grid,
-                                    n_iter=3000, scoring='precision',
+                                    n_iter=10, scoring='precision',
                                     cv=3, n_jobs=-1, verbose=1)
 
     # Perform cross-validation with precision scoring
     randsearch.fit(X_processed, y_train)
 
-    final_model = randsearch.best_estimator_
-
     print(f"✅ SVM Model trained with best params: {randsearch.best_params_} and best score: {randsearch.best_score_}")
 
-    return final_model
+    return {
+        "model" : randsearch.best_estimator_,
+        "params" : randsearch.best_params_,
+        "score" : randsearch.best_score_
+        }
 
 
 def similar_users(X_train_users_proc, X_new_user_proc):

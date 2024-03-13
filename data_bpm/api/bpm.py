@@ -4,8 +4,8 @@ from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 import json
 from data_bpm.ml_logic.registry import load_model, load_preproc_pipeline
-from data_bpm.ml_logic.data import get_data_from_gcs, save_data_to_gcs
-from data_bpm.interface.main import *
+from data_bpm.ml_logic.data import get_clean_data_from_gcs, save_data_to_gcs, get_raw_data_from_gcs
+from data_bpm.interface.main import train_model2
 from data_bpm.params import *
 app = FastAPI()
 
@@ -81,7 +81,7 @@ def getCleanData():
     # 4. If everythin OK, return a OK message otherwise an appropriate error message
 
     ## Doing 1st and 2nd steps
-    success, result = get_data_from_gcs()
+    success, result = get_raw_data_from_gcs()
 
     if success:
         data_ml, data_analytics = result[0], result[1]
@@ -102,13 +102,21 @@ def getCleanData():
         }
 
 
-# @app.get("/train")
-# def train():
-#     # 1. read the latest clean data from google cloud
-#     # 2. preprocess it
-#     # 3. train the model
+@app.get("/train_model")
+def train_model():
+    # 1. read the latest clean data from google cloud
+    # 2. preprocess it
+    # 3. train the model
 
+    success, message = train_model2(save=True)
+    if success:
+        model_dic = message
+        return {
+            "params" : model_dic['params'],
+            "score" : model_dic['score']
+        }
 
-#     return {
-#         "greeting": "works!"
-#     }
+    else :
+        return {
+            "Error" : f"Unable to train model, {message}"
+        }

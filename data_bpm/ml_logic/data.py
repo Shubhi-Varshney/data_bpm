@@ -257,7 +257,7 @@ def custom_user_matching(row_scraped, row_ids):
                 return True
 
 
-def get_data_from_gcs():
+def get_raw_data_from_gcs():
     '''
     This method will read the latest csv data from google cloud storage |
     Data files will be uploaded manually from the stakeholder
@@ -277,7 +277,7 @@ def get_data_from_gcs():
         return (True, clean_data(data_events_ppl, data_scraped))
     except FileNotFoundError as e:
         print(f"\n❌ No files found in GCS bucket {bucket_name}")
-        # print(f"File {gsfile_path_events_ppl} not found in bucket {bucket_name}")
+        #print(f"File {gsfile_path_events_ppl} not found in bucket {bucket_name}")
         return (False, e)
 
 def save_data_to_gcs(
@@ -319,3 +319,23 @@ def save_data_to_gcs(
         print(f"\n❌ No files saved in GCS bucket {bucket}")
 
         return False, e
+
+
+def get_clean_data_from_gcs():
+    '''
+    This method will read the latest cleaned csv data from google cloud storage |
+    '''
+    print(Fore.BLUE + f"\nLoad latest cleaned data files needed for model from GCS..." + Style.RESET_ALL)
+
+    bucket_name = params.BUCKET_NAME
+    gsfile_clean_data_ml = f'gs://{bucket_name}/{params.CLEANED_FILE_ML}'
+
+    try:
+        data_ml = pd.read_csv(gsfile_clean_data_ml)
+        print("✅ Latest clean ml file loaded from cloud storage")
+
+        return (True, data_ml)
+    except FileNotFoundError as e:
+        print(f"\n❌ No clean ML file found in GCS bucket {bucket_name}")
+        print(f"File {gsfile_clean_data_ml} not found in bucket {bucket_name}")
+        return (False, e)

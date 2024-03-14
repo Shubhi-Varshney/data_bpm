@@ -103,7 +103,8 @@ def clean_data(data_events_ppl, data_scraped):
     data_merged = data_scraped.dropna(subset=['UserID'])
 
     columns_to_drop = ['url', 'title', 'linkedinProfileUrl', 'email', 'linkedinProfile', 'firstName', 'lastName',
-                   'fullName', 'connectionDegree', 'timestamp', 'subscribers', 'mutualConnectionsText', 'imgUrl', 'website', 'mail',
+                   # 'fullName', # don't drop the full name to use for output of the cosine similarity
+                   'connectionDegree', 'timestamp', 'subscribers', 'mutualConnectionsText', 'imgUrl', 'website', 'mail',
                    'profileId', 'baseUrl', 'connectionDegree', 'vmid', 'userId', 'linkedinSalesNavigatorUrl', 'connectionsCount', 'connectionsUrl',
                    'mutualConnectionsUrl','companyUrl','companyUrl2','schoolUrl','schoolUrl2','jobDateRange2',
                    'connectedOn', 'phoneNumber', 'partialScreenshot', 'facebookUrl', 'website', 'error']

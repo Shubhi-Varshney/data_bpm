@@ -181,7 +181,7 @@ def get_data():
         data_scraped = pd.read_csv(Path.join("raw_data", params.RAW_FILE_SCRAPPED))
 
     else:
-        print(Fore.RED + "\nMODEL_TARGET not set, exiting" + Style.RESET_ALL)
+        print(Fore.RED + "\DATA_TARGET not set, exiting" + Style.RESET_ALL)
         return(None,None)
 
     return clean_data(data_events_ppl, data_scraped)

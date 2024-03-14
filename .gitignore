@@ -1,8 +1,6 @@
 nltk_data/*
 raw_data/*
-training_outputs/*
-training_outputs/models/*
-training_outputs/pipes/*
+data_bpm/training_outputs/*
 .env
 .envrc
 

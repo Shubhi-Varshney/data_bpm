@@ -103,24 +103,24 @@ def getCleanData():
         }
 
 
-@app.get("/train_model")
-def train_model():
-    # 1. read the latest clean data from google cloud
-    # 2. preprocess it
-    # 3. train the model
+# @app.get("/train_model")
+# def train_model():
+#     # 1. read the latest clean data from google cloud
+#     # 2. preprocess it
+#     # 3. train the model
 
-    success, message = train_model2(save=True)
-    if success:
-        model_dic = message
-        return {
-            "params" : model_dic['params'],
-            "score" : model_dic['score']
-        }
+#     success, message = train_model2(save=True)
+#     if success:
+#         model_dic = message
+#         return {
+#             "params" : model_dic['params'],
+#             "score" : model_dic['score']
+#         }
 
-    else :
-        return {
-            "Error" : f"Unable to train model, {message}"
-        }
+#     else :
+#         return {
+#             "Error" : f"Unable to train model, {message}"
+#         }
 
 
 @app.post("/get_similar_users")
@@ -156,10 +156,13 @@ def get_similar_users(File: UploadFile=File(...)):
         user_id_indices = similar_users(X_train_processed, X_processed)
 
         # Get the user information and send it back as a json
-        users_info = data_for_ml.iloc[user_id_indices][['fullName', 'company', 'jobTitle']]
+        users_info = data_for_ml.iloc[user_id_indices][['jobTitle','company']]
         users_info.index = users_info.index.astype(int)
 
-        user_dict = users_info.to_dict(orient='index')
+        # users_info.index.name = "User_ID"
+        # users_info.reset_index(inplace= True)
+
+        user_dict = users_info.to_json()
         print(user_dict)
 
         return user_dict

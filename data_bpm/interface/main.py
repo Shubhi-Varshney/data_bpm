@@ -9,7 +9,7 @@ from data_bpm.ml_logic.preprocessor import preprocess_features
 from data_bpm.ml_logic.registry import load_model, save_model, save_results, load_preproc_pipeline
 from data_bpm.ml_logic.model import train_model, train_model_2
 from data_bpm import params
-from data_bpm.ml_logic.model import get_similar_users
+from data_bpm.ml_logic.model import similar_users
 
 def preprocess():
     data_for_ml, data_for_analytics = get_data()
@@ -170,7 +170,7 @@ def pred():
 
     print(positive_probabilities)
 
-def similar_users():
+def sim_users():
     '''
     Find top n similar users of a new/existing user   '''
 
@@ -200,7 +200,7 @@ def similar_users():
     X_train_process = preproc_pipeline.fit_transform(data_for_ml)
     X_pred_process = preproc_pipeline.transform(X_pred)
 
-    user_id_indices = get_similar_users(X_train_process, X_pred_process)
+    user_id_indices = similar_users(X_train_process, X_pred_process)
     #print(data_for_ml.iloc[user_id_indices][['fullName', 'company', 'jobTitle']])
 
     users_info = data_for_ml.iloc[user_id_indices][['fullName', 'company', 'jobTitle']]
@@ -216,4 +216,4 @@ if __name__ == '__main__':
     # train_model2(save=True)
     # evaluate()
     # pred()
-    similar_users()
+    sim_users()

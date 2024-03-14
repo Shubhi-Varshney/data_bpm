@@ -15,7 +15,7 @@ st.sidebar.markdown("# Prediction")
 
 # Function to call predict API
 def call_predict_api(payload):
-    url = "http://localhost:8000/predict"  # Update URL as needed
+    url = "http://127.0.0.1:8000/predict"  # Update URL as needed
     response = requests.post(url, files={"File": payload})
     if response.status_code == 200:
         return response.json()

@@ -6,7 +6,7 @@ import json
 from data_bpm.ml_logic.registry import load_model, load_preproc_pipeline
 from data_bpm.ml_logic.data import get_clean_data_from_gcs, save_data_to_gcs, get_raw_data_from_gcs
 from data_bpm.interface.main import train_model2
-from data_bpm.ml_logic.model import get_similar_users
+from data_bpm.ml_logic.model import similar_users
 from data_bpm import params
 app = FastAPI()
 
@@ -124,7 +124,7 @@ def train_model():
 
 
 @app.post("/get_similar_users")
-def predict(File: UploadFile=File(...)):
+def get_similar_users(File: UploadFile=File(...)):
     content = File.file.read()
     decode = content.decode('utf-8')
     df_json = json.loads(decode)
@@ -136,6 +136,7 @@ def predict(File: UploadFile=File(...)):
     print("Transformed the prediction data")
     print(X_processed)
     # Make prediction
+    # breakpoint()
     try:
         if params.DATA_TARGET == 'local':
             print(" Reading the clean data from local folder: raw_data..")
@@ -149,16 +150,17 @@ def predict(File: UploadFile=File(...)):
             data_for_ml = pd.read_csv(gsfile_path_events_ppl)
 
         # Processed the training data
-        X_processed = app.state.preproc_pipe.transform(data_for_ml)
+        X_train_processed = app.state.preproc_pipe.transform(data_for_ml)
 
         # Find the indices of similar user based on cosine_similarity
-        user_id_indices = get_similar_users(X_processed, X_processed)
+        user_id_indices = similar_users(X_train_processed, X_processed)
 
         # Get the user information and send it back as a json
         users_info = data_for_ml.iloc[user_id_indices][['fullName', 'company', 'jobTitle']]
         users_info.index = users_info.index.astype(int)
 
         user_dict = users_info.to_dict(orient='index')
+        print(user_dict)
 
         return user_dict
 

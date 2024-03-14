@@ -71,7 +71,7 @@ def train_model_2(
         }
 
 
-def get_similar_users(X_train_users_proc, X_new_user_proc):
+def similar_users(X_train_users_proc, X_new_user_proc):
 
     # return the indices of top_n similar users to the new user (used in prediction website)
     # X_train_users_proc = preprocessed final features of the training data
